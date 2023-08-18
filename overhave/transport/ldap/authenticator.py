@@ -24,7 +24,6 @@ class LDAPAuthenticator:
         if self._settings.tls_enabled:
             ldap_connection.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_REQUIRE_CERT)
             ldap_connection.start_tls_s()
-
         ldap_connection.simple_bind_s(f"{self._settings.domain}{login}", password.get_secret_value())
         self._ldap_connection = ldap_connection
 
