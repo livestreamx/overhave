@@ -10,6 +10,7 @@ class OverhaveLdapClientSettings(BaseSettings):
     domain: str  # for example: "domain\\"
     dn: str  # for example: "dc=example,dc=com"
     timeout: timedelta = timedelta(seconds=10)
+    tls_enabled: bool = True
 
     class Config:
         env_prefix = "OVERHAVE_LDAP_"
