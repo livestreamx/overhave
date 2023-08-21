@@ -21,8 +21,10 @@ class LDAPAuthenticator:
         ldap_connection = ldap.initialize(self._settings.url)
         ldap_connection.set_option(ldap.OPT_REFERRALS, 0)
         ldap_connection.set_option(ldap.OPT_NETWORK_TIMEOUT, self._settings.timeout.seconds)
+        if self._settings.tls_enabled:
+            ldap_connection.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_REQUIRE_CERT)
+            ldap_connection.start_tls_s()
         ldap_connection.simple_bind_s(f"{self._settings.domain}{login}", password.get_secret_value())
-
         self._ldap_connection = ldap_connection
 
     def _ask_ad_usergroups(self, login: str) -> list[str]:

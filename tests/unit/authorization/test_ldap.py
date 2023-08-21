@@ -9,3 +9,6 @@ class TestLdapAuthenticator:
 
     def test_get_user_groups(self, test_ldap_authenticator: LDAPAuthenticator) -> None:
         assert test_ldap_authenticator.get_user_groups("kek", SecretStr("lol")) == TEST_LDAP_GROUPS
+
+    def test_connect(self, test_ldap_authenticator: LDAPAuthenticator) -> None:
+        test_ldap_authenticator._connect(login="kek", password=SecretStr("lol"))
