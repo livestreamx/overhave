@@ -9,7 +9,7 @@ from pytest_redis import factories
 from redis import Redis, Sentinel
 
 from overhave.factory import ConsumerFactory
-from overhave.metrics import BaseOverhaveMetricContainer
+from overhave.metrics import BaseOverhaveMetricContainer, get_common_metric_container
 from overhave.transport import (
     BaseRedisSettings,
     OverhaveRedisSentinelSettings,
@@ -111,7 +111,7 @@ def redis_consumer_factory(
     mock_sentinel: None,
     clear_redis_settings: None,
 ) -> ConsumerFactory:
-    return ConsumerFactory(stream=RedisStream.TEST)
+    return ConsumerFactory(stream=RedisStream.TEST, metric_container=get_common_metric_container())
 
 
 @pytest.fixture()

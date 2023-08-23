@@ -21,8 +21,9 @@ from overhave.transport.redis.deps import get_redis_settings, make_redis
 class ConsumerFactory:
     """Factory for :class:`RedisConsumer`, :class:`RedisConsumerRunner` and tasks mapping."""
 
-    def __init__(self, stream: RedisStream):
+    def __init__(self, stream: RedisStream, metric_container: BaseOverhaveMetricContainer):
         self._stream = stream
+        self._metric_container = metric_container
 
     @cached_property
     def _database(self) -> walrus.Database:
@@ -35,7 +36,7 @@ class ConsumerFactory:
             settings=get_redis_settings(),
             stream_name=self._stream,
             database=self._database,
-            metric_container=get_common_metric_container(),
+            metric_container=self._metric_container,
         )
 
     @cached_property
