@@ -4,7 +4,7 @@ from typing import Callable
 import walrus
 
 from overhave.factory.getters import get_emulation_factory, get_publication_factory, get_test_execution_factory
-from overhave.metrics import get_common_metric_container
+from overhave.metrics import BaseOverhaveMetricContainer
 from overhave.pytest_plugin import get_proxy_manager
 from overhave.transport import (
     AnyRedisTask,
