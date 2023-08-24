@@ -26,7 +26,7 @@ pre-init:
 init:
 	python$(PYTHON_VERSION) -m venv $(VENV)
 	$(VENV)/bin/python -m pip install --upgrade pip
-	$(VENV)/bin/python -m pip install poetry
+	$(VENV)/bin/python -m pip install poetry==1.5.1
 	$(VENV)/bin/poetry install
 
 precommit-install:
