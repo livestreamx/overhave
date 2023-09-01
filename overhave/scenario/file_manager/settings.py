@@ -46,7 +46,7 @@ class OverhaveProjectSettings(BaseOverhavePrefix):
     user_spec_template_mapping: Mapping[str, type[BaseModel]] = {}
 
     @model_validator(mode="after")
-    def validate_links_keyword(self: "OverhaveProjectSettings") -> "OverhaveProjectSettings":  # type: ignore[misc]
+    def validate_links_keyword(self: "OverhaveProjectSettings") -> "OverhaveProjectSettings":
         if isinstance(self.tasks_keyword, str) and self.task_tracker_url is None:
             raise ValueError("'task_tracker_url' should be specified in case of 'tasks_keyword' usage!")
         return self

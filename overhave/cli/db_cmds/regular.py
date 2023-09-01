@@ -1,5 +1,4 @@
-# import sqlalchemy as sa  # noqa: E800
-import sqlalchemy.engine
+import sqlalchemy as sa
 import sqlalchemy_utils as sau
 import typer
 from alembic.config import Config
@@ -18,18 +17,18 @@ def create_schema(config: Config) -> None:
 def drop_schema(config: Config) -> None:
     typer.echo("Dropping...")
     meta = config.attributes["metadata"]
-    engine: sqlalchemy.engine.Engine = config.attributes["engine"]  # SQLAlchemy2.0 - sa.Engine
+    engine: sa.Engine = config.attributes["engine"]
 
-    connection: sqlalchemy.engine.Connection = engine.connect()  # SQLAlchemy2.0 - sa.Connection
+    connection: sa.Connection = engine.connect()
     for table in meta.tables:
-        connection.execute(sqlalchemy.text(f'DROP TABLE IF EXISTS "{table}" CASCADE'))
-    connection.execute(sqlalchemy.text("DROP TABLE IF EXISTS alembic_version"))
+        connection.execute(sa.text(f'DROP TABLE IF EXISTS "{table}" CASCADE'))
+    connection.execute(sa.text("DROP TABLE IF EXISTS alembic_version"))
 
     meta.drop_all(engine)
     typer.secho("Completed.", fg="green")
 
 
-def _ensure_database_exists(db_url: sqlalchemy.engine.URL) -> None:  # SQLAlchemy2.0 - sa.URL
+def _ensure_database_exists(db_url: sa.URL) -> None:
     try:
         if not sau.database_exists(db_url):
             sau.create_database(db_url)

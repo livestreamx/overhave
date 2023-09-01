@@ -5,7 +5,6 @@ from logging.config import DictConfigurator
 from typing import Any
 
 import sqlalchemy as sa
-import sqlalchemy.engine
 import sqlalchemy.exc
 from pydantic import field_validator
 from pydantic_settings import BaseSettings
@@ -21,9 +20,9 @@ class BaseOverhavePrefix(BaseSettings):
         env_prefix = OVERHAVE_ENV_PREFIX
 
 
-def _as_alchemy_url(db_url: str) -> sqlalchemy.engine.URL:  # SQLAlchemy2.0 - sa.make_url
+def _as_alchemy_url(db_url: str) -> sa.URL:
     try:
-        return sqlalchemy.engine.make_url(db_url)  # SQLAlchemy2.0 - sa.make_url
+        return sa.make_url(db_url)
     except sqlalchemy.exc.ArgumentError as e:
         raise ValueError from e
 
@@ -39,7 +38,7 @@ class DataBaseSettings(BaseOverhavePrefix):
     db_connect_timeout: int = 30
     db_poolclass: type[Pool] = SingletonThreadPool
 
-    def _create_engine(self) -> sqlalchemy.engine.Engine:  # SQLAlchemy2.0 - sa.Engine
+    def _create_engine(self) -> sa.Engine:
         return sa.engine_from_config(
             {
                 "url": _as_alchemy_url(self.db_url),
