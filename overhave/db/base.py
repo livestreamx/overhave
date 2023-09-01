@@ -3,7 +3,6 @@ import re
 from typing import Any, cast
 
 import sqlalchemy as sa
-import sqlalchemy.engine as se
 import sqlalchemy.orm as so
 
 logger = logging.getLogger(__name__)
@@ -22,15 +21,15 @@ class SAMetadata(sa.MetaData):
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
         super().__init__(*args, **kwargs)
-        self._engine: se.Engine | None = None  # SQLAlchemy2.0 - sa.Engine
+        self._engine: sa.Engine | None = None
 
     @property
-    def engine(self) -> se.Engine:  # SQLAlchemy2.0 - sa.Engine
-        if isinstance(self._engine, se.Engine):  # SQLAlchemy2.0 - sa.Engine
+    def engine(self) -> sa.Engine:
+        if isinstance(self._engine, sa.Engine):
             return self._engine
         raise RuntimeError("MetaData has not got bounded Engine!")
 
-    def set_engine(self, engine: se.Engine) -> None:  # SQLAlchemy2.0 - sa.Engine
+    def set_engine(self, engine: sa.Engine) -> None:
         self._engine = engine
 
 
@@ -55,9 +54,9 @@ def _classname_to_tablename(name: str) -> str:
 class BaseTable:
     """Base table class with __tablename__."""
 
-    @so.declared_attr  # SQLAlchemy2.0 - @so.declared_attr.directive
+    @so.declared_attr.directive
     def __tablename__(cls) -> str:
-        return _classname_to_tablename(cls.__name__)
+        return _classname_to_tablename(cls.__name__)  # type: ignore[attr-defined]
 
 
 class PrimaryKeyWithoutDateMixin:
@@ -77,9 +76,9 @@ class PrimaryKeyMixin(PrimaryKeyWithoutDateMixin):
 
 
 def _get_query_cls(
-    mapper: tuple[type[BaseTable], ...] | so.Mapper,  # type: ignore[type-arg]
-    session: Any,  # SQLAlchemy2.0 - session: so.SessionClass
-) -> so.Query:  # type: ignore[type-arg]  # SQLAlchemy2.0 - so.Query[Any]
+    mapper: tuple[type[BaseTable], ...] | so.Mapper[Any],
+    session: so.Session,
+) -> so.Query[Any]:
     if mapper:
         m = mapper
         if isinstance(m, tuple):
@@ -89,7 +88,7 @@ def _get_query_cls(
 
         try:
             return cast(
-                so.Query,  # type: ignore[type-arg]  # SQLAlchemy2.0 - so.Query[Any]
+                so.Query[Any],
                 m.__query_cls__(mapper, session),  # type: ignore[union-attr]
             )
         except AttributeError:

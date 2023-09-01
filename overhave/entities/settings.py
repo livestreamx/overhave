@@ -84,11 +84,11 @@ class OverhaveFileSettings(BaseOverhavePrefix):
                 values[directory] = Path(root_dir) / directory.replace("_dir", "")
         return values
 
-    @model_validator(mode="after")  # type: ignore[misc]
+    @model_validator(mode="after")
     def validate_nesting(self) -> "OverhaveFileSettings":
         if self.validate_steps_dir and not self.steps_dir.relative_to(self.work_dir):
             raise ValueError("'steps_dir' is not relative to 'work_dir', but should be!")
-        return self  # type: ignore[return-value]
+        return self
 
     @property
     def tmp_features_dir(self) -> Path:
