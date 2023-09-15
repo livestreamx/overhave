@@ -18,7 +18,7 @@ def make_sentinel_master(settings: OverhaveRedisSentinelSettings) -> Redis:  # t
 
 def make_regular_redis(redis_settings: OverhaveRedisSettings) -> Redis:  # type: ignore
     return Redis.from_url(
-        str(redis_settings.url),
+        redis_settings.url.human_repr(),
         db=redis_settings.db,
         socket_timeout=redis_settings.socket_timeout.total_seconds(),
     )
