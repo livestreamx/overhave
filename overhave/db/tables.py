@@ -32,10 +32,6 @@ class Tags(BaseTable, PrimaryKeyMixin):
     def __repr__(self) -> str:
         return self.value
 
-    def __init__(self, value: str, created_by: str) -> None:
-        self.value = value
-        self.created_by = created_by
-
 
 @su.generic_repr("id", "name", "last_edited_by")
 class Feature(BaseTable, PrimaryKeyMixin):
