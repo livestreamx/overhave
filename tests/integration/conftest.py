@@ -186,7 +186,7 @@ def test_features(
 ) -> list[FeatureModel]:
     features = []
     with create_test_session() as session:
-        for x in range(num_features):
+        for _ in range(num_features):
             feature = db.Feature(
                 name=faker.word(),
                 author=service_system_user.login,
