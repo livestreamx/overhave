@@ -1,6 +1,6 @@
 import httpx
 from pydantic import field_validator
-from pydantic_core.core_schema import FieldValidationInfo
+from pydantic_core.core_schema import ValidationInfo
 
 from overhave.transport.http import BaseHttpClientSettings
 from overhave.utils import make_url
@@ -23,7 +23,7 @@ class TokenizerClientSettings(BaseHttpClientSettings):
         return make_url(v)
 
     @field_validator("url", "remote_key", "remote_key_name", mode="after")
-    def validate_remote_key_and_initiator(cls, v: str | None, values: FieldValidationInfo) -> str | None:
+    def validate_remote_key_and_initiator(cls, v: str | None, values: ValidationInfo) -> str | None:
         if values.data.get("enabled") and not isinstance(v, str):
             raise ValueError("Please verify that url, remote_key and remote_key_name variables are not nullable!")
         return v
