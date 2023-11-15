@@ -55,12 +55,14 @@ class TestEmulationView:
     def test_additional_cmd_description_is_equal_emulation_desc_link(self, test_emulation_view: EmulationView,
                                                                      current_user_mock: mock.MagicMock,
                                                                      test_emulation_desc_link: str,
-                                                                     test_mock_admin_factory_for_emulation_view: mock.MagicMock) -> None:
+                                                                     test_mock_admin_factory_for_emulation_view:
+                                                                     mock.MagicMock) -> None:
         assert test_emulation_view.additional_cmd_description == test_emulation_desc_link
 
     @pytest.mark.parametrize("user_role", [db.Role.user], indirect=True)
     def test_description_link_is_equal_emulation_desc_link(self, test_emulation_view: EmulationView,
                                                            current_user_mock: mock.MagicMock,
                                                            test_emulation_desc_link: str,
-                                                           test_mock_admin_factory_for_emulation_view: mock.MagicMock) -> None:
+                                                           test_mock_admin_factory_for_emulation_view:
+                                                           mock.MagicMock) -> None:
         assert test_emulation_view.description_link == test_emulation_desc_link
