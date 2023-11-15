@@ -243,6 +243,11 @@ def test_mock_admin_factory() -> mock.MagicMock:
         yield mocked
 
 @pytest.fixture()
+def test_emulation_view() -> views.EmulationView:
+    return views.EmulationView(model=db.Emulation, session=UnifiedAlchemyMagicMock)
+
+
+@pytest.fixture()
 def test_emulation_id(faker: Faker) -> int:
     return faker.random_int()
 
