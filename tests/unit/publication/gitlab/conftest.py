@@ -1,5 +1,6 @@
 from typing import Callable, Mapping, Sequence, cast
 
+import httpx
 import pytest
 from faker import Faker
 from pytest_mock import MockFixture
@@ -59,6 +60,23 @@ def test_tokenizer_client_settings_factory(
         return TokenizerClientSettings(
             enabled=True,
             url=f"http://{faker.word()}.com",
+            initiator=initiator,
+            remote_key=remote_key,
+            remote_key_name=remote_key_name,
+        )
+
+    return get_tokenizer_settings
+
+
+@pytest.fixture()
+def test_tokenizer_client_settings_disabled_factory(
+        url: httpx.URL | None, initiator: str | None, remote_key: str | None,
+        remote_key_name: str | None
+) -> Callable[[], TokenizerClientSettings]:
+    def get_tokenizer_settings():
+        return TokenizerClientSettings(
+            enabled=False,
+            url=url,
             initiator=initiator,
             remote_key=remote_key,
             remote_key_name=remote_key_name,
