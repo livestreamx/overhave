@@ -236,7 +236,7 @@ def test_mock_patch_user_directory(request: FixtureRequest) -> list[str]:
 
 
 @pytest.fixture()
-def test_mock_admin_factory() -> mock.MagicMock:
+def test_mock_admin_factory_for_feature_view() -> mock.MagicMock:
     with patch("overhave.admin.views.feature.get_admin_factory", return_value=mock.MagicMock()) as mocked:
         instance = mocked.return_value
         instance.context.file_settings.feature_suffix = ".feature"

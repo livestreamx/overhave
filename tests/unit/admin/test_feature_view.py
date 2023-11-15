@@ -39,6 +39,6 @@ class TestFeatureView:
         current_user_mock: mock.MagicMock,
         test_feature_row: db.Feature,
         test_feature_filepath: str,
-        test_mock_admin_factory: mock.MagicMock,
+        test_mock_admin_factory_for_feature_view: mock.MagicMock,
     ) -> None:
         assert test_feature_view._make_file_path(test_feature_filepath) == "kek/lol.feature"
