@@ -242,6 +242,20 @@ def test_mock_admin_factory() -> mock.MagicMock:
         instance.context.file_settings.feature_suffix = ".feature"
         yield mocked
 
+
+@pytest.fixture
+def test_emulation_desc_link(faker: Faker):
+    return faker.word()
+
+
+@pytest.fixture
+def test_mock_admin_factory_for_emulation_view(test_emulation_desc_link: str) -> mock.MagicMock:
+    with patch("overhave.admin.views.emulation.get_admin_factory", return_value=mock.MagicMock()) as mocked:
+        instance = mocked.return_value
+        instance.context.emulation_settings.emulation_desc_link = test_emulation_desc_link
+        yield mocked
+
+
 @pytest.fixture()
 def test_emulation_view() -> views.EmulationView:
     return views.EmulationView(model=db.Emulation, session=UnifiedAlchemyMagicMock)
