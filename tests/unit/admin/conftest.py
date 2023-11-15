@@ -241,3 +241,38 @@ def test_mock_admin_factory() -> mock.MagicMock:
         instance = mocked.return_value
         instance.context.file_settings.feature_suffix = ".feature"
         yield mocked
+
+@pytest.fixture()
+def test_emulation_id(faker: Faker) -> int:
+    return faker.random_int()
+
+
+@pytest.fixture()
+def test_emulation_name(faker: Faker) -> str:
+    return faker.word()
+
+
+@pytest.fixture()
+def test_emulation_command(faker: Faker) -> str:
+    return faker.word()
+
+
+@pytest.fixture()
+def test_emulation_created_by(faker: Faker) -> str:
+    return faker.word()
+
+
+@pytest.fixture()
+def test_emulation_row(test_emulation_id: int,
+                       test_emulation_name: str,
+                       test_emulation_command: str,
+                       test_emulation_created_by: str,
+                       test_testing_user_id: int,
+                       test_testing_user_row: db.TestUser) -> db.Emulation:
+    row = db.Emulation(name=test_emulation_name,
+                       command=test_emulation_command,
+                       created_by=test_emulation_created_by,
+                       test_user_id=test_testing_user_id)
+    row.id = test_emulation_id
+    row.test_user = test_testing_user_row
+    return row
