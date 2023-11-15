@@ -203,8 +203,21 @@ def test_testing_user_view(faker: Faker) -> views.TestUserView:
 
 
 @pytest.fixture()
-def test_testing_user_row() -> db.TestUser:
-    return db.TestUser()
+def test_testing_user_id(faker: Faker) -> int:
+    return faker.random_int()
+
+
+@pytest.fixture()
+def test_testing_user_name(faker: Faker) -> str:
+    return faker.word()
+
+
+@pytest.fixture()
+def test_testing_user_row(test_testing_user_id: int,
+                          test_testing_user_name: str) -> db.TestUser:
+    row = db.TestUser(name=test_testing_user_name)
+    row.id = test_testing_user_id
+    return row
 
 
 @pytest.fixture()
