@@ -60,13 +60,6 @@ class TestRedisConsumer:
 
         cg = redis_consumer._consumer_group
 
-        # try:
-        #     cg.test.add({})
-        # except:
-        #     assert True
-        # else:
-        #     assert False
-
         with pytest.raises(Exception) as exc_info:
             cg.test.add({})
         assert str(exc_info.value) == 'XADD fields must be a non-empty dict'
