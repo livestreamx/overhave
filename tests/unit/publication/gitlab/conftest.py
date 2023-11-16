@@ -1,5 +1,6 @@
 from typing import Callable, Mapping, Sequence, cast
 
+import httpx
 import pytest
 from faker import Faker
 from pytest_mock import MockFixture
@@ -9,6 +10,7 @@ from overhave.entities import GitRepositoryInitializer
 from overhave.metrics import PublicationOverhaveMetricContainer
 from overhave.publication.gitlab import GitlabVersionPublisher, OverhaveGitlabPublisherSettings
 from overhave.publication.gitlab.tokenizer import TokenizerClient, TokenizerClientSettings
+from overhave.publication.gitlab.tokenizer.client import TokenizerRequestParamsModel
 from overhave.scenario import FileManager
 from overhave.storage import FeatureTypeName, IDraftStorage, IFeatureStorage, IScenarioStorage, ITestRunStorage
 from overhave.transport import GitlabHttpClient
@@ -119,3 +121,33 @@ def test_gitlab_publisher_with_reviewers_mapping(
         tokenizer_client=mocked_tokenizer_client,
         metric_container=publication_container,
     )
+
+
+@pytest.fixture()
+def test_tokenizer_request_params_model_factory(
+    initiator: str, remote_key: str, id: int
+) -> Callable[[], TokenizerRequestParamsModel]:
+    def get_tokenizer_request_params():
+        return TokenizerRequestParamsModel(
+            initiator=initiator,
+            id=id,
+            remote_key=remote_key,
+        )
+
+    return get_tokenizer_request_params
+
+
+@pytest.fixture()
+def test_tokenizer_client_settings_disabled_factory(
+    url: httpx.URL | None, initiator: str | None, remote_key: str | None, remote_key_name: str | None
+) -> Callable[[], TokenizerClientSettings]:
+    def get_tokenizer_settings():
+        return TokenizerClientSettings(
+            enabled=False,
+            url=url,
+            initiator=initiator,
+            remote_key=remote_key,
+            remote_key_name=remote_key_name,
+        )
+
+    return get_tokenizer_settings
