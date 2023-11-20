@@ -66,6 +66,21 @@ def test_tokenizer_client_settings_factory(
 
     return get_tokenizer_settings
 
+@pytest.fixture()
+def test_tokenizer_client_factory(
+    initiator: str | None, remote_key: str | None, remote_key_name: str | None, url: str | None
+) -> Callable[[], TokenizerClientSettings]:
+    def get_tokenizer_client():
+        return TokenizerClient(settings=TokenizerClientSettings(
+            enabled=True,
+            url=url,
+            initiator=initiator,
+            remote_key=remote_key,
+            remote_key_name=remote_key_name,
+        ))
+
+    return get_tokenizer_client
+
 
 @pytest.fixture()
 def test_gitlab_publisher_with_default_reviewers(
