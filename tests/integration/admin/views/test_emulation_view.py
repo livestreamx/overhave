@@ -15,16 +15,16 @@ class TestEmulationView:
     """Tests for emulation view."""
 
     @pytest.mark.parametrize("test_user_role", [db.Role.admin], indirect=True)
-    def test_edit_redirect_to_emulation_index_view_if_no_emulate(self, test_client: FlaskClient,
-                                                                 test_authorized_user: SystemUserModel) -> None:
+    def test_edit_redirects_to_emulation_index_view_if_no_emulate(self, test_client: FlaskClient,
+                                                                  test_authorized_user: SystemUserModel) -> None:
         with create_test_session():
             response = test_client.get("/emulation/edit/")
         assert response.status_code == HTTPStatus.FOUND
         assert response.location == '/emulation/'
 
     @pytest.mark.parametrize("test_user_role", [db.Role.admin], indirect=True)
-    def test_edit_redirect_to_emulation_index_view_if_emulate_and_no_emulation_id(self, test_client: FlaskClient,
-                                                                                  test_authorized_user) -> None:
+    def test_edit_redirects_to_emulation_index_view_if_emulate_and_no_emulation_id(self, test_client: FlaskClient,
+                                                                                   test_authorized_user) -> None:
         with create_test_session():
             response = test_client.get("/emulation/edit/", data={"emulate": True})
         assert response.status_code == HTTPStatus.FOUND
