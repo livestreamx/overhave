@@ -31,9 +31,9 @@ class TestEmulationView:
         assert response.location == '/emulation/'
 
     @pytest.mark.parametrize("test_user_role", [db.Role.admin], indirect=True)
-    def test_edit_creates_emulation_run(self, test_client: FlaskClient,
-                                        test_authorized_user: SystemUserModel,
-                                        test_emulation: EmulationModel) -> None:
+    def test_edit_creates_emulation_run_and_redirects_to_emulation_run_details(self, test_client: FlaskClient,
+                                                                               test_authorized_user: SystemUserModel,
+                                                                               test_emulation: EmulationModel) -> None:
         with create_test_session():
             response = test_client.post("/emulation/edit/",
                                         data={"emulate": True},
