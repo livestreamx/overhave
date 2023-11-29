@@ -52,6 +52,20 @@ def mocked_tokenizer_client(mocker: MockFixture) -> TokenizerClient:
 
 
 @pytest.fixture()
+def test_tokenizer_client(
+    url: str | None, remote_key_name: str | None, faker: Faker
+) -> TokenizerClient:
+    settings = TokenizerClientSettings(
+            url=f"http://{faker.word()}.com",
+            remote_key=faker.word(),
+            remote_key_name=faker.word(),
+    )
+    settings.url = url
+    settings.remote_key_name = remote_key_name
+    return TokenizerClient(settings)
+
+
+@pytest.fixture()
 def test_tokenizer_client_settings_factory(
     initiator: str | None, remote_key: str | None, remote_key_name: str | None, faker: Faker
 ) -> Callable[[], TokenizerClientSettings]:
