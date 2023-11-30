@@ -8,10 +8,13 @@ from pytest_mock import MockFixture
 from overhave import OverhaveFileSettings, OverhaveProjectSettings
 from overhave.entities import GitRepositoryInitializer
 from overhave.metrics import PublicationOverhaveMetricContainer
-from overhave.publication.gitlab import GitlabVersionPublisher, OverhaveGitlabPublisherSettings
-from overhave.publication.gitlab.tokenizer import TokenizerClient, TokenizerClientSettings
+from overhave.publication.gitlab import GitlabVersionPublisher, \
+    OverhaveGitlabPublisherSettings
+from overhave.publication.gitlab.tokenizer import TokenizerClient, \
+    TokenizerClientSettings
 from overhave.scenario import FileManager
-from overhave.storage import FeatureTypeName, IDraftStorage, IFeatureStorage, IScenarioStorage, ITestRunStorage
+from overhave.storage import FeatureTypeName, IDraftStorage, IFeatureStorage, \
+    IScenarioStorage, ITestRunStorage
 from overhave.transport import GitlabHttpClient
 
 
@@ -72,9 +75,8 @@ def test_tokenizer_client_settings_factory(
 def test_tokenizer_client_settings_disabled_factory(
         url: httpx.URL | None, initiator: str | None, remote_key: str | None,
         remote_key_name: str | None
-) -> Callable[[], TokenizerClientSettings]:
-    def get_tokenizer_settings():
-        return TokenizerClientSettings(
+) -> TokenizerClientSettings:
+    return TokenizerClientSettings(
             enabled=False,
             url=url,
             initiator=initiator,
@@ -82,7 +84,12 @@ def test_tokenizer_client_settings_disabled_factory(
             remote_key_name=remote_key_name,
         )
 
-    return get_tokenizer_settings
+
+@pytest.fixture()
+def test_tokenizer_client(
+        test_tokenizer_client_settings_disabled_factory: TokenizerClientSettings
+) -> TokenizerClient:
+    return TokenizerClient(test_tokenizer_client_settings_disabled_factory)
 
 
 @pytest.fixture()

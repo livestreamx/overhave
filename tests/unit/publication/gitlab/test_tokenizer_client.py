@@ -1,6 +1,7 @@
 from typing import Callable
 
 import pytest
+import requests_mock
 from pydantic import ValidationError
 
 from overhave.publication import TokenizerClient
@@ -31,23 +32,15 @@ class TestTokenizerClient:
     @pytest.mark.parametrize(("url", "initiator", "remote_key", "remote_key_name"),
                              [(None, "lol", "pepe", "angry-pepe")])
     def test_tokenizer_client_get_token_invalid_url(
-            self, test_tokenizer_client_settings_disabled_factory: Callable[[], TokenizerClientSettings]
+            self, test_tokenizer_client: TokenizerClient
     ) -> None:
-        settings = test_tokenizer_client_settings_disabled_factory()
-
-        client = TokenizerClient(settings)
-
         with pytest.raises(InvalidUrlException):
-            client.get_token(777)
+            test_tokenizer_client.get_token(777)
 
     @pytest.mark.parametrize(("url", "initiator", "remote_key", "remote_key_name"),
                              [("https://lol.ru", "pepe", "peka", None)])
     def test_tokenizer_client_get_token_invalid_remote_key_name(
-            self, test_tokenizer_client_settings_disabled_factory: Callable[[], TokenizerClientSettings]
+            self, test_tokenizer_client: TokenizerClient
     ) -> None:
-        settings = test_tokenizer_client_settings_disabled_factory()
-
-        client = TokenizerClient(settings)
-
         with pytest.raises(InvalidRemoteKeyNameException):
-            client.get_token(777)
+            test_tokenizer_client.get_token(777)
