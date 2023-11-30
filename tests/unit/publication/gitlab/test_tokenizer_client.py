@@ -1,7 +1,6 @@
 from typing import Callable
 
 import pytest
-import requests_mock
 from pydantic import ValidationError
 
 from overhave.publication import TokenizerClient
