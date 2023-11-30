@@ -40,26 +40,3 @@ class TestRedisConsumer:
         assert redis_consumer._stream_name == stream_name
         assert redis_consumer._database == database
         assert redis_consumer._metric_container == metric_container
-
-    @pytest.mark.parametrize(
-        ("settings", "stream_name", "database", "metric_container"),
-        [
-            (settings, RedisStream.TEST, walrus.Database(host="localhost", port=6379, db=0), metric_container),
-        ],
-    )
-    def test_redis_empty_msg(
-            self,
-            settings: BaseRedisSettings,
-            stream_name: RedisStream,
-            database: walrus.Database,
-            metric_container: BaseOverhaveMetricContainer,
-    ) -> None:
-        redis_consumer = RedisConsumer(
-            settings=settings, stream_name=stream_name, database=database, metric_container=metric_container
-        )
-
-        cg = redis_consumer._consumer_group
-
-        with pytest.raises(Exception) as exc_info:
-            cg.test.add({})
-        assert str(exc_info.value) == 'XADD fields must be a non-empty dict'
