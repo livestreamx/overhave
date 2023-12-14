@@ -24,7 +24,7 @@ pre-init:
         libsasl2-dev libldap2-dev libssl-dev libpq-dev g++ libgnutls28-dev
 
 mac-pre-init:
-        brew install python@$(PYTHON_VERSION) gcc libsasl2 openldap libiconv libpq tmux libxml2 libxslt
+	brew install python@$(PYTHON_VERSION) gcc libsasl2 openldap libiconv libpq tmux libxml2 libxslt
 
 init:
 	python$(PYTHON_VERSION) -m venv $(VENV)
