@@ -1,14 +1,15 @@
 import abc
 import logging
+import pickle
 import socket
 from typing import cast
 
 import sqlalchemy as sa
-import sqlalchemy.orm as so
 
 from overhave import db
 from overhave.entities.settings import OverhaveEmulationSettings
 from overhave.storage import EmulationRunModel
+from overhave.transport.redis.deps import make_redis, get_redis_settings
 from overhave.utils import get_current_time
 
 logger = logging.getLogger(__name__)
@@ -52,6 +53,8 @@ class EmulationStorage(IEmulationStorage):
     """Class for emulation runs storage."""
 
     def __init__(self, settings: OverhaveEmulationSettings):
+        self._redis = redis = make_redis(get_redis_settings())
+        self._redis.set('allocated_ports', pickle.dumps([]))
         self._settings = settings
         self._emulation_ports_len = len(self._settings.emulation_ports)
 
@@ -65,20 +68,9 @@ class EmulationStorage(IEmulationStorage):
             session.flush()
             return emulation_run.id
 
-    def _get_next_port(self, session: so.Session) -> int:
-        runs_with_allocated_ports = (  # noqa: ECE001
-            session.query(db.EmulationRun)
-            .filter(db.EmulationRun.port.isnot(None))
-            .order_by(db.EmulationRun.id.desc())
-            .limit(self._emulation_ports_len)
-            .all()
-        )
-        allocated_sorted_runs = sorted(
-            runs_with_allocated_ports,
-            key=lambda t: t.changed_at,
-        )
+    def _get_next_port(self) -> int:
+        allocated_ports = self.get_allocated_ports()
 
-        allocated_ports = {run.port for run in allocated_sorted_runs}
         logger.debug("Allocated ports: %s", allocated_ports)
         not_allocated_ports = set(self._settings.emulation_ports).difference(allocated_ports)
         logger.debug("Not allocated ports: %s", not_allocated_ports)
@@ -88,11 +80,19 @@ class EmulationStorage(IEmulationStorage):
                     continue
                 return port
             logger.debug("All not allocated ports are busy!")
-        for run in allocated_sorted_runs:
-            if self._is_port_in_use(cast(int, run.port)):
+        for port in allocated_ports:
+            if self._is_port_in_use(cast(int, port)):
                 continue
-            return cast(int, run.port)
+            return cast(int, port)
         raise AllPortsAreBusyError("All ports are busy - could not find free port!")
+
+    def get_allocated_ports(self):
+        return pickle.loads(self._redis.get('allocated_ports'))
+
+    def allocate_port(self, port):
+        new_allocated_ports = self.get_allocated_ports()
+        new_allocated_ports.append(port)
+        self._redis.set('allocated_ports', pickle.dumps(sorted(new_allocated_ports)))
 
     def _is_port_in_use(self, port: int) -> bool:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -102,7 +102,8 @@ class EmulationStorage(IEmulationStorage):
         with db.create_session() as session:
             emulation_run = session.query(db.EmulationRun).filter(db.EmulationRun.id == emulation_run_id).one()
             emulation_run.status = db.EmulationStatus.REQUESTED
-            emulation_run.port = self._get_next_port(session)
+            emulation_run.port = self._get_next_port()
+            self.allocate_port(emulation_run.port)
             emulation_run.changed_at = get_current_time()
             return EmulationRunModel.model_validate(emulation_run)
 
