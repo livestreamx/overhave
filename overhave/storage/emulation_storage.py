@@ -9,7 +9,7 @@ import sqlalchemy as sa
 from overhave import db
 from overhave.entities.settings import OverhaveEmulationSettings
 from overhave.storage import EmulationRunModel
-from overhave.transport.redis.deps import make_redis, get_redis_settings
+from overhave.transport.redis.deps import get_redis_settings, make_redis
 from overhave.utils import get_current_time
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ class EmulationStorage(IEmulationStorage):
 
     def __init__(self, settings: OverhaveEmulationSettings):
         self._redis = redis = make_redis(get_redis_settings())
-        self._redis.set('allocated_ports', pickle.dumps([]))
+        self._redis.set("allocated_ports", pickle.dumps([]))
         self._settings = settings
         self._emulation_ports_len = len(self._settings.emulation_ports)
 
@@ -87,12 +87,12 @@ class EmulationStorage(IEmulationStorage):
         raise AllPortsAreBusyError("All ports are busy - could not find free port!")
 
     def get_allocated_ports(self):
-        return pickle.loads(self._redis.get('allocated_ports'))
+        return pickle.loads(self._redis.get("allocated_ports"))
 
     def allocate_port(self, port):
         new_allocated_ports = self.get_allocated_ports()
         new_allocated_ports.append(port)
-        self._redis.set('allocated_ports', pickle.dumps(sorted(new_allocated_ports)))
+        self._redis.set("allocated_ports", pickle.dumps(sorted(new_allocated_ports)))
 
     def _is_port_in_use(self, port: int) -> bool:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
