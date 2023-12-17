@@ -53,7 +53,7 @@ class EmulationStorage(IEmulationStorage):
     """Class for emulation runs storage."""
 
     def __init__(self, settings: OverhaveEmulationSettings):
-        self._redis = redis = make_redis(get_redis_settings())
+        self._redis = make_redis(get_redis_settings())
         self._redis.set("allocated_ports", pickle.dumps([]))
         self._settings = settings
         self._emulation_ports_len = len(self._settings.emulation_ports)
