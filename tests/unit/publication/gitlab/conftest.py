@@ -9,7 +9,6 @@ from overhave.entities import GitRepositoryInitializer
 from overhave.metrics import PublicationOverhaveMetricContainer
 from overhave.publication.gitlab import GitlabVersionPublisher, OverhaveGitlabPublisherSettings
 from overhave.publication.gitlab.tokenizer import TokenizerClient, TokenizerClientSettings
-from overhave.publication.gitlab.tokenizer.client import TokenizerRequestParamsModel
 from overhave.scenario import FileManager
 from overhave.storage import FeatureTypeName, IDraftStorage, IFeatureStorage, IScenarioStorage, ITestRunStorage
 from overhave.transport import GitlabHttpClient
@@ -66,35 +65,6 @@ def test_tokenizer_client_settings_factory(
         )
 
     return get_tokenizer_settings
-
-
-@pytest.fixture(scope="function")
-def test_tokenizer_client(
-        test_tokenizer_client_settings_factory: Callable[[], TokenizerClientSettings],
-        empty_key_name: bool,
-        empty_url: bool,
-) -> TokenizerClient:
-    settings = test_tokenizer_client_settings_factory()
-    if empty_url:
-        settings.url = None
-    if empty_key_name:
-        settings.remote_key_name = None
-
-    return TokenizerClient(settings)
-
-
-@pytest.fixture()
-def test_tokenizer_request_params_model_factory(
-    initiator: str, remote_key: str, id: int, faker: Faker
-) -> Callable[[], TokenizerRequestParamsModel]:
-    def get_tokenizer_request_params():
-        return TokenizerRequestParamsModel(
-            initiator=initiator,
-            id=id,
-            remote_key=remote_key,
-        )
-
-    return get_tokenizer_request_params
 
 
 @pytest.fixture()
