@@ -66,6 +66,7 @@ def test_tokenizer_client_settings_factory(
 
     return get_tokenizer_settings
 
+
 @pytest.fixture()
 def test_gitlab_publisher_with_default_reviewers(
     test_file_settings: OverhaveFileSettings,
