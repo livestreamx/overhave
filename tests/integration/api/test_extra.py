@@ -13,5 +13,4 @@ class TestExtraAPI:
         response = test_api_client.get("/favicon.ico")
 
         assert response.status_code == HTTPStatus.OK
-        assert response.read() == \
-               Path(get_admin_files_dir() / "favicon.ico").read_bytes()
+        assert response.read() == Path(get_admin_files_dir() / "favicon.ico").read_bytes()
