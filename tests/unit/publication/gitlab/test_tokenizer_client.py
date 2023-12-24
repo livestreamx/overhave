@@ -57,22 +57,22 @@ class TestTokenizerClient:
 
     @pytest.mark.parametrize(("initiator", "id", "remote_key", "remote_key_name"), [("Danil", 59, "Overhave", "abaca")])
     def test_tokenizer_req_params_sets_fields_correct(
-        self, initiator: str, id: int, remote_key: str, remote_key_name: str
+        self, initiator: str, initiator_id: int, remote_key: str, remote_key_name: str
     ) -> None:
-        model = TokenizerRequestParamsModel(initiator=initiator, id=id, remote_key=remote_key)
+        model = TokenizerRequestParamsModel(initiator=initiator, id=initiator_id, remote_key=remote_key)
 
         assert model.initiator == initiator
-        assert model.id == id
+        assert model.id == initiator_id
         assert model.remote_key == remote_key
 
     @pytest.mark.parametrize(("initiator", "id", "remote_key", "remote_key_name"), [("Danil", 59, "Overhave", "abaca")])
     def test_tokenizer_req_get_request_works_correct(
-        self, initiator: str, id: int, remote_key: str, remote_key_name: str
+        self, initiator: str, initiator_id: int, remote_key: str, remote_key_name: str
     ) -> None:
-        model = TokenizerRequestParamsModel(initiator=initiator, id=id, remote_key=remote_key)
+        model = TokenizerRequestParamsModel(initiator=initiator, id=initiator_id, remote_key=remote_key)
 
         req_params = model.get_request_params(remote_key_name=remote_key_name)
         assert req_params is not None
         assert req_params["initiator"] == initiator
-        assert req_params["id"] == id
+        assert req_params["id"] == initiator_id
         assert req_params[remote_key_name] == remote_key

@@ -1,5 +1,8 @@
+# flake8: noqa: F821
+
 import pytest
 import walrus
+from prometheus_client import CollectorRegistry
 
 from overhave.metrics import BaseOverhaveMetricContainer
 from overhave.transport.redis import RedisConsumer
@@ -16,7 +19,7 @@ class TestRedisConsumer:
 
     @pytest.fixture()
     def metric_container(self) -> BaseOverhaveMetricContainer:
-        return BaseOverhaveMetricContainer(registry="some_registry")
+        return BaseOverhaveMetricContainer(registry=CollectorRegistry())
 
     @pytest.mark.parametrize(
         ("settings", "stream_name", "database", "metric_container"),
@@ -160,7 +163,7 @@ class TestRedisConsumer:
         self,
         settings: BaseRedisSettings,
         stream_name: RedisStream,
-        database: walrus.Database(host="localhost", port=6379, db=0),
+        database: walrus.Database,
         metric_container: BaseOverhaveMetricContainer,
     ) -> None:
         redis_consumer = RedisConsumer(
