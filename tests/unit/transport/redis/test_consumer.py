@@ -13,18 +13,15 @@ from overhave.transport.redis.settings import BaseRedisSettings
 class TestRedisConsumer:
     """Unit tests for redis-consumer."""
 
-    @pytest.fixture()
-    def settings(self) -> BaseRedisSettings:
-        return BaseRedisSettings()
-
-    @pytest.fixture()
-    def metric_container(self) -> BaseOverhaveMetricContainer:
-        return BaseOverhaveMetricContainer(registry=CollectorRegistry())
-
     @pytest.mark.parametrize(
         ("settings", "stream_name", "database", "metric_container"),
         [
-            (settings, RedisStream.TEST, walrus.Database(host="localhost", port=6379, db=0), metric_container),
+            (
+                BaseRedisSettings(),
+                RedisStream.TEST,
+                walrus.Database(host="localhost", port=6379, db=0),
+                BaseOverhaveMetricContainer(registry=CollectorRegistry()),
+            ),
         ],
     )
     def test_field_initialization(
@@ -46,7 +43,12 @@ class TestRedisConsumer:
     @pytest.mark.parametrize(
         ("settings", "stream_name", "database", "metric_container"),
         [
-            (settings, RedisStream.EMULATION, walrus.Database(host="localhost", port=6379, db=0), metric_container),
+            (
+                BaseRedisSettings(),
+                RedisStream.EMULATION,
+                walrus.Database(host="localhost", port=6379, db=0),
+                BaseOverhaveMetricContainer(registry=CollectorRegistry()),
+            ),
         ],
     )
     def test_consumer_group_with_empty_keys(
@@ -66,7 +68,12 @@ class TestRedisConsumer:
     @pytest.mark.parametrize(
         ("settings", "stream_name", "database", "metric_container"),
         [
-            (settings, RedisStream.TEST, walrus.Database(host="localhost", port=6379, db=0), metric_container),
+            (
+                BaseRedisSettings(),
+                RedisStream.TEST,
+                walrus.Database(host="localhost", port=6379, db=0),
+                BaseOverhaveMetricContainer(registry=CollectorRegistry()),
+            ),
         ],
     )
     def test_consumer_group_with_not_empty_keys(
@@ -88,7 +95,12 @@ class TestRedisConsumer:
     @pytest.mark.parametrize(
         ("settings", "stream_name", "database", "metric_container"),
         [
-            (settings, RedisStream.PUBLICATION, walrus.Database(host="localhost", port=6379, db=0), metric_container),
+            (
+                BaseRedisSettings(),
+                RedisStream.PUBLICATION,
+                walrus.Database(host="localhost", port=6379, db=0),
+                BaseOverhaveMetricContainer(registry=CollectorRegistry()),
+            ),
         ],
     )
     def test_stream(
@@ -107,7 +119,12 @@ class TestRedisConsumer:
     @pytest.mark.parametrize(
         ("settings", "stream_name", "database", "metric_container"),
         [
-            (settings, RedisStream.TEST, walrus.Database(host="localhost", port=6379, db=0), metric_container),
+            (
+                BaseRedisSettings(),
+                RedisStream.TEST,
+                walrus.Database(host="localhost", port=6379, db=0),
+                BaseOverhaveMetricContainer(registry=CollectorRegistry()),
+            ),
         ],
     )
     def test_clean_pending_with_msgs(
@@ -131,7 +148,12 @@ class TestRedisConsumer:
     @pytest.mark.parametrize(
         ("settings", "stream_name", "database", "metric_container"),
         [
-            (settings, RedisStream.PUBLICATION, walrus.Database(host="localhost", port=6379, db=0), metric_container),
+            (
+                BaseRedisSettings(),
+                RedisStream.PUBLICATION,
+                walrus.Database(host="localhost", port=6379, db=0),
+                BaseOverhaveMetricContainer(registry=CollectorRegistry()),
+            ),
         ],
     )
     def test_clean_consume_with_no_msgs(
@@ -155,7 +177,7 @@ class TestRedisConsumer:
                 BaseRedisSettings(read_count=3),
                 RedisStream.TEST,
                 walrus.Database(host="localhost", port=6379, db=0),
-                metric_container,
+                BaseOverhaveMetricContainer(registry=CollectorRegistry()),
             ),
         ],
     )
