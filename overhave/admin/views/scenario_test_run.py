@@ -1,12 +1,19 @@
+import logging
 from typing import cast
 
+import flask
 import werkzeug
 from flask_admin import expose
 from flask_login import current_user
 from wtforms import Form, ValidationError
 
 from overhave import db
+from overhave.admin.views import FeatureView
 from overhave.admin.views.base import ModelViewConfigured
+
+logger = logging.getLogger(__name__)
+
+_SCENARIO_PREFIX = "scenario-0"
 
 
 class TestRunView(ModelViewConfigured):
@@ -63,4 +70,10 @@ class TestRunView(ModelViewConfigured):
 
     @expose("/details/", methods=("GET", "POST"))
     def details_view(self) -> werkzeug.Response:
+        rendered: werkzeug.Response = super().details_view()
+        data = FeatureView.data_store
+
+        if flask.request.method == "POST":
+            return FeatureView._run_test(data=data, rendered=rendered)
+
         return cast(werkzeug.Response, super().details_view())
