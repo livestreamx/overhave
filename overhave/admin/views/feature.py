@@ -117,6 +117,8 @@ class FactoryViewUtilsMixin:
 class FeatureView(ModelViewConfigured, FactoryViewUtilsMixin):
     """View for :class:`Feature` table."""
 
+    data_store = None
+
     can_view_details = False
 
     inline_models = (ScenarioInlineModelForm(db.Scenario),)
@@ -242,6 +244,9 @@ class FeatureView(ModelViewConfigured, FactoryViewUtilsMixin):
             return rendered
 
         data = flask.request.form
+
+        self.__class__.data_store = data
+
         logger.debug("Request data:\n%s", json.dumps(data))
         run_scenario_action = data.get("run")
         if not run_scenario_action:
