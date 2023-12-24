@@ -78,6 +78,8 @@ class TestUserView(ModelViewConfigured):
                 raise ValidationError(f"Could not convert specified data into {parser.__name__} model!")
 
     def on_model_change(self, form: Form, model: db.TestUser, is_created: bool) -> None:
+        if model.name is not None and model.name.__contains__(' '):
+            raise ValidationError("Name should not contain spaces!")
         self._feature_type = cast(FeatureTypeName, model.feature_type.name)
         self._validate_json(model)
         if is_created:
