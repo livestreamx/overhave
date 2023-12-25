@@ -9,7 +9,7 @@ from _pytest.fixtures import FixtureRequest
 from faker import Faker
 from flask import Flask
 
-from demo.demo import _run_demo_admin
+from demo.demo_1 import _run_demo_admin
 from demo.settings import OverhaveDemoAppLanguage, OverhaveDemoSettingsGenerator
 from overhave import OverhaveDBSettings, db
 from overhave.admin.views.feature import _SCENARIO_PREFIX, FeatureView

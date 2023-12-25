@@ -5,7 +5,7 @@ import pytest
 import werkzeug
 from _pytest.fixtures import FixtureRequest
 
-from demo.demo import _run_demo_consumer
+from demo.demo_1 import _run_demo_consumer
 from demo.settings import OverhaveDemoSettingsGenerator
 from overhave import OverhaveRedisStream
 from overhave.db import TestReportStatus
