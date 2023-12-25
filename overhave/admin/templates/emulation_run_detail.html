@@ -22,6 +22,12 @@
 
 {% macro render_edit_button(model) %}
     <a href="{{ url_for('emulation.edit_view', id=model.emulation_id) }}">
-        <button class="button edit-btn">Edit template</button>
+        <button class="button edit-btn" onclick="disableButton()">Edit template</button>
+        <script>
+            function disableButton() {
+                var myButton = document.getElementsByClassName("button edit-btn");
+                myButton.disabled = true;
+            }
+        </script>
     </a>
 {% endmacro %}
