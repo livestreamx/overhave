@@ -9,3 +9,17 @@ class TokenRequestData(BaseModel):
     grant_type: Literal["password"] = "password"
     username: str
     password: str
+
+
+class ApiTagResponse(BaseModel):
+    """resp."""
+
+    id: int
+    value: str
+    created_by: str
+
+
+class ApiTagsResponse(BaseModel):
+    """resp."""
+
+    items: list[ApiTagResponse]

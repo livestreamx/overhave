@@ -18,6 +18,8 @@ class OverhaveApiAuthenticatorSettings(BaseHttpClientSettings):
 
 
 class OverhaveApiClientSettings(BaseHttpClientSettings):
+    """settings."""
+
     auth_token: str
 
     class Config:
