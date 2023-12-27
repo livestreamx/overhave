@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from demo.demo_1 import _prepare_synchronizer_factory
+from demo.demo import _prepare_synchronizer_factory
 from demo.settings import OverhaveDemoSettingsGenerator
 from overhave import db, overhave_synchronizer_factory
 from overhave.cli.synchronizer import _create_synchronizer, _create_validator

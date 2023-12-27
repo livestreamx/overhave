@@ -175,3 +175,7 @@ def validate_features(
     _prepare_synchronizer_factory(settings_generator=_get_overhave_settings_generator(language=language))
     with _mock_git_repo():
         _create_validator().validate(raise_if_nullable_id)
+
+
+if __name__ == "__main__":
+    overhave_demo()
