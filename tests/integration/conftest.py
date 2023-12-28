@@ -1,15 +1,21 @@
 from datetime import datetime
-from typing import cast
+from typing import cast, Iterator
+from unittest import mock
 from uuid import uuid1
 
 import allure
 import pytest
+import httpx
 from _pytest.fixtures import FixtureRequest
 from faker import Faker
+from fastapi.testclient import TestClient
 
-from overhave import OverhaveEmulationSettings, db
+from overhave import OverhaveEmulationSettings, db, OverhaveApiAuthenticator, OverhaveApiAuthenticatorSettings
+from overhave import overhave_api
 from overhave.db import DraftStatus
+from overhave.transport.http.base_client import BearerAuth
 from overhave.storage import (
+    AuthStorage,
     DraftModel,
     DraftStorage,
     EmulationModel,
@@ -324,3 +330,28 @@ def test_draft(
         session.add(draft)
         session.flush()
         return DraftModel.model_validate(draft)
+
+
+@pytest.fixture()
+def test_api_client(database) -> TestClient:
+    return TestClient(overhave_api())
+
+
+@pytest.fixture()
+def api_authenticator_settings(test_api_client: TestClient) -> OverhaveApiAuthenticatorSettings:
+    return OverhaveApiAuthenticatorSettings(url=test_api_client.base_url)
+
+
+@pytest.fixture()
+def api_authenticator(
+    mock_envs, test_api_client: TestClient, api_authenticator_settings: OverhaveApiAuthenticatorSettings
+) -> Iterator[OverhaveApiAuthenticator]:
+    with mock.patch.object(httpx, "request", new_callable=lambda: test_api_client.request):
+        yield OverhaveApiAuthenticator(settings=api_authenticator_settings, auth_storage=AuthStorage())
+
+
+@pytest.fixture()
+def test_api_bearer_auth(
+    service_system_user: SystemUserModel, api_authenticator: OverhaveApiAuthenticator
+) -> BearerAuth:
+    return api_authenticator.get_bearer_auth(username=service_system_user.login, password=service_system_user.password)
