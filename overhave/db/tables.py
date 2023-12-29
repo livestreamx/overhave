@@ -174,3 +174,17 @@ class EmulationRun(BaseTable, PrimaryKeyMixin):
     emulation: so.Mapped[Emulation] = so.relationship(
         Emulation, uselist=False, backref=so.backref("emulation_runs", cascade="all, delete-orphan")
     )
+
+
+class FeatureInWorkInfo(BaseTable, PrimaryKeyMixin):
+    """FeatureInWorkInfo table."""
+
+    feature_id: int = sa.Column(sa.Integer(), sa.ForeignKey(Feature.id), nullable=False, index=True)
+    finished_at: datetime.datetime | None = sa.Column(sa.DateTime(timezone=True), doc="Finished time")
+    feature: so.Mapped[Feature] = so.relationship(Feature, uselist=False)
+
+    def tasks(self) -> list[str]:
+        return self.feature.task
+
+    def __html__(self) -> str:
+        return f'<a href="{url_for("draft.details_view", id=self.id)}">Draft: {self.id}</a>'
