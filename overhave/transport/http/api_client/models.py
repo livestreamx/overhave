@@ -15,17 +15,10 @@ class TokenRequestData(BaseModel):
 
 
 class ApiTagResponse(BaseModel):
-    """resp."""
-
+    """Model for Tag response data."""
     id: int
     value: str
     created_by: str
-
-
-class ApiTagsResponse(BaseModel):
-    """resp."""
-
-    items: list[ApiTagResponse]
 
 
 class ApiFeatureTypeResponse(BaseModel):
@@ -48,3 +41,17 @@ class ApiFeatureResponse(BaseModel):
 
     feature_type: ApiFeatureTypeResponse
     feature_tags: list[ApiTagResponse]
+
+
+class ApiTestRunResponse(BaseModel):
+    id: int
+    created_at: datetime
+    name: str
+    executed_by: str
+    start: datetime | None
+    end: datetime | None
+    status: str
+    report_status: str
+    report: str | None
+    traceback: str | None
+    scenario_id: int

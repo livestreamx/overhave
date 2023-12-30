@@ -34,6 +34,7 @@ def run_tests_by_tag_handler(
     test_run_storage: TestRunStorage = fastapi.Depends(get_test_run_storage),
     redis_producer: RedisProducer = fastapi.Depends(get_redis_producer),
 ) -> list[str]:
+    print('-----------------------')
     tag_model = tags_item_handler(value=tag_value, feature_tag_storage=tag_storage)
     features = feature_storage.get_features_by_tag(tag_id=tag_model.id)
     if not features:

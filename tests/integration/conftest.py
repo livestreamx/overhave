@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 
 from overhave import OverhaveEmulationSettings, db, OverhaveApiAuthenticator, OverhaveApiAuthenticatorSettings
 from overhave import overhave_api
-from overhave.db import DraftStatus
+from overhave.db import DraftStatus, TestRunStatus, TestReportStatus
 from overhave.transport.http.base_client import BearerAuth
 from overhave.storage import (
     AuthStorage,
@@ -33,7 +33,7 @@ from overhave.storage import (
     TestRunStorage,
     TestUserModel,
     TestUserSpecification,
-    TestUserStorage,
+    TestUserStorage, TestRunModel,
 )
 from overhave.utils import get_current_time
 from tests.db_utils import create_test_session
@@ -220,6 +220,15 @@ def test_feature_with_tag(test_feature: FeatureModel, test_tag: TagModel) -> Fea
 
 
 @pytest.fixture()
+def test_feature_with_scenario(test_feature_with_tag: FeatureModel, faker: Faker) -> FeatureModel:
+    with create_test_session() as session:
+        db_scenario = db.Scenario(feature_id=test_feature_with_tag.id, text=faker.word())
+        session.add(db_scenario)
+        session.flush()
+        return test_feature_with_tag
+
+
+@pytest.fixture()
 def test_features_with_tag(test_features: list[FeatureModel], test_tag: TagModel) -> list[FeatureModel]:
     features = []
     with create_test_session() as session:
@@ -294,6 +303,21 @@ def test_emulation_run(service_system_user: SystemUserModel, test_emulation: Emu
         session.add(emulation_run)
         session.flush()
         return EmulationRunModel.model_validate(emulation_run)
+
+
+@pytest.fixture()
+def test_test_run(faker: Faker, service_system_user: SystemUserModel, test_scenario: ScenarioModel) -> TestRunModel:
+    with create_test_session() as session:
+        test_run = db.TestRun(
+            scenario_id=test_scenario.id,
+            name=cast(str, faker.word()),
+            status=TestRunStatus.STARTED,
+            report_status=TestReportStatus.EMPTY,
+            executed_by=service_system_user.login,
+        )
+        session.add(test_run)
+        session.flush()
+        return TestRunModel.model_validate(test_run)
 
 
 @pytest.fixture(scope="module")

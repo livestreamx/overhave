@@ -1,12 +1,13 @@
 import logging
-from typing import Any, Mapping, cast
+from typing import Any, Mapping
 
 import httpx
 
 from overhave.transport.http import BaseHttpClient, BearerAuth
-from overhave.transport.http.api_client.models import ApiFeatureResponse, ApiFeatureTypeResponse, ApiTagResponse
+from overhave.transport.http.api_client.models import ApiFeatureResponse, ApiFeatureTypeResponse, ApiTagResponse, \
+    ApiTestRunResponse
 from overhave.transport.http.api_client.settings import OverhaveApiClientSettings
-from overhave.transport.http.base_client import HttpClientValidationError, HttpMethod
+from overhave.transport.http.base_client import HttpMethod
 
 logger = logging.getLogger(__name__)
 
@@ -18,10 +19,10 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         super().__init__(settings=settings)
 
     def _get(
-        self,
-        url: httpx.URL,
-        params: dict[str, Any] | None = None,
-        raise_for_status: bool = True,
+            self,
+            url: httpx.URL,
+            params: dict[str, Any] | None = None,
+            raise_for_status: bool = True,
     ):
         return self._make_request(
             method=HttpMethod.GET,
@@ -32,15 +33,15 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         )
 
     def _post(
-        self,
-        url: httpx.URL,
-        params: dict[str, Any] | None = None,
-        json: dict[str, Any] | None = None,
-        data: str | bytes | Mapping[Any, Any] | None = None,
-        raise_for_status: bool = True,
+            self,
+            url: httpx.URL,
+            params: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | bytes | Mapping[Any, Any] | None = None,
+            raise_for_status: bool = True,
     ):
         return self._make_request(
-            method=HttpMethod.GET,
+            method=HttpMethod.POST,
             url=url,
             params=params,
             json=json,
@@ -50,12 +51,12 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         )
 
     def _put(
-        self,
-        url: httpx.URL,
-        params: dict[str, Any] | None = None,
-        json: dict[str, Any] | None = None,
-        data: str | bytes | Mapping[Any, Any] | None = None,
-        raise_for_status: bool = True,
+            self,
+            url: httpx.URL,
+            params: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | bytes | Mapping[Any, Any] | None = None,
+            raise_for_status: bool = True,
     ):
         return self._make_request(
             method=HttpMethod.PUT,
@@ -68,10 +69,10 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         )
 
     def _delete(
-        self,
-        url: httpx.URL,
-        params: dict[str, Any] | None = None,
-        raise_for_status: bool = True,
+            self,
+            url: httpx.URL,
+            params: dict[str, Any] | None = None,
+            raise_for_status: bool = True,
     ):
         return self._make_request(
             method=HttpMethod.DELETE,
@@ -81,50 +82,69 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
             auth=BearerAuth(self._settings.auth_token),
         )
 
-    def get_feature_tags_item(self):
-        response = self._get(url=httpx.URL(f"{self._settings.url}/feature/tags/item"))
+    def get_feature_tags_item(self, value: str) -> ApiTagResponse:
+        logger.debug(f"Start get feature tags item with [value: {value}]")
+        response = self._get(
+            url=httpx.URL(f"{self._settings.url}/feature/tags/item"),
+            params={"value": value}
+        )
+        logger.debug("Get tags item successfully")
 
-        try:
-            return cast(ApiTagResponse, self._parse_or_raise(response, ApiTagResponse))
-        except HttpClientValidationError:
-            logger.debug("Could not convert response to '%s'!", ApiTagResponse, exc_info=True)
+        return ApiTagResponse.model_validate(response.json())
 
-        return None
+    def get_feature_tags_list(self, value: str) -> list[ApiTagResponse]:
+        logger.debug(f"Start get feature tags list with [value: {value}]")
+        response = self._get(
+            url=httpx.URL(f"{self._settings.url}/feature/tags/list"),
+            params={"value": value}
+        )
+        logger.debug("Get tags list successfully")
 
-    def get_feature_tags_list(self):
-        response = self._get(url=httpx.URL(f"{self._settings.url}/feature/tags/list"))
-
-        try:
-            return cast(ApiTagResponse, self._parse_or_raise(response, ApiTagResponse))
-        except HttpClientValidationError:
-            logger.debug("Could not convert response to '%s'!", ApiTagResponse, exc_info=True)
-
-        return None
-
-    def get_emulation_run_list(self) -> None:
-        pass  # response = self._get(url=httpx.URL(f"{self._settings.url}/emulation/run/list"))
-
-    def get_test_run(self) -> None:
-        pass  # response = self._get(url=httpx.URL(f"{self._settings.url}/test_run"))
-
-    def create_test_run(self) -> None:
-        pass  # response = self._post(url=httpx.URL(f"{self._settings.url}/test_run/create/"))
+        return [ApiTagResponse.model_validate(data) for data in response.json()]
 
     def get_feature_types(self) -> list[ApiFeatureTypeResponse]:
+        logger.debug(f"Start get feature types list")
         response = self._get(url=httpx.URL(f"{self._settings.url}/feature/types/list"))
-        feature_types = [ApiFeatureTypeResponse.model_validate(data) for data in response.json()]
-        return feature_types
+        logger.debug("Get feature types successfully")
+
+        return [ApiFeatureTypeResponse.model_validate(data) for data in response.json()]
 
     def get_features_by_tag_id(self, tag_id: int) -> list[ApiFeatureResponse]:
+        logger.debug(f"Start get feature with [tag_id: {tag_id}]")
         response = self._get(
             url=httpx.URL(f"{self._settings.url}/feature/"),
             params={"tag_id": tag_id},
         )
+        logger.debug("Get feature successfully")
+
         return [ApiFeatureResponse.model_validate(data) for data in response.json()]
 
     def get_features_by_tag_value(self, tag_value: str) -> list[ApiFeatureResponse]:
+        logger.debug(f"Start get feature with [tag_value: {tag_value}]")
         response = self._get(
             url=httpx.URL(f"{self._settings.url}/feature/"),
             params={"tag_value": tag_value},
         )
+        logger.debug("Get feature successfully")
+
         return [ApiFeatureResponse.model_validate(data) for data in response.json()]
+
+    def get_test_run(self, test_run_id: int) -> ApiTestRunResponse:
+        logger.debug(f"Start get test run with [test_run_id: {test_run_id}]")
+        response = self._get(
+            url=httpx.URL(f"{self._settings.url}/test_run"),
+            params={"test_run_id": test_run_id},
+        )
+        logger.debug("Get test run successfully")
+
+        return ApiTestRunResponse.model_validate(response.json())
+
+    def create_test_run(self, tag_value: str) -> list[str]:
+        logger.debug(f"Start create test run with [tag_value: {tag_value}]")
+        response = self._post(
+            url=httpx.URL(f"{self._settings.url}/test_run/create/"),
+            params={"tag_value": tag_value},
+        )
+        logger.debug("Create test run successfully")
+
+        return response.json()
