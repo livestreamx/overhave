@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Literal
 
 import allure
-
 from pydantic import BaseModel
 
 
@@ -17,17 +16,22 @@ class TokenRequestData(BaseModel):
 
 class ApiTagResponse(BaseModel):
     """Model for Tag response data."""
+
     id: int
     value: str
     created_by: str
 
 
 class ApiFeatureTypeResponse(BaseModel):
+    """Model for Feature Type response data."""
+
     id: int
     name: str
 
 
 class ApiFeatureResponse(BaseModel):
+    """Model for Feature response data."""
+
     id: int
     created_at: datetime
     name: str
@@ -45,6 +49,8 @@ class ApiFeatureResponse(BaseModel):
 
 
 class ApiTestRunResponse(BaseModel):
+    """Model for TestRun response data."""
+
     id: int
     created_at: datetime
     name: str
@@ -58,7 +64,9 @@ class ApiTestRunResponse(BaseModel):
     scenario_id: int
 
 
-class EmulationStatus(enum.StrEnum):
+class ApiEmulationStatus(enum.StrEnum):
+    """Enum for Emulation Status."""
+
     CREATED = "CREATED"
     REQUESTED = "REQUESTED"
     READY = "READY"
@@ -66,6 +74,8 @@ class EmulationStatus(enum.StrEnum):
 
 
 class ApiTestUserResponse(BaseModel):
+    """Model for TestUser response data."""
+
     id: int
     created_at: datetime
     key: str
@@ -79,16 +89,20 @@ class ApiTestUserResponse(BaseModel):
 
 
 class ApiEmulationResponse(BaseModel):
+    """Model for Emulation response data."""
+
     id: int
     command: str
     test_user: ApiTestUserResponse
 
 
 class ApiEmulationRunResponse(BaseModel):
+    """Model for EmulationRun response data."""
+
     id: int
     emulation_id: int
     changed_at: datetime
-    status: EmulationStatus
+    status: ApiEmulationStatus
     port: int | None
     initiated_by: str
     emulation: ApiEmulationResponse

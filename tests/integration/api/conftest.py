@@ -4,8 +4,6 @@ import httpx
 import pytest
 from faker import Faker
 
-from overhave.storage import TestUserSpecification
-
 
 @pytest.fixture(scope="module")
 def envs_for_mock() -> dict[str, str | None]:

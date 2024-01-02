@@ -1,19 +1,23 @@
 from datetime import datetime
-from typing import cast, Iterator
+from typing import Iterator, cast
 from unittest import mock
 from uuid import uuid1
 
 import allure
-import pytest
 import httpx
+import pytest
 from _pytest.fixtures import FixtureRequest
 from faker import Faker
 from fastapi.testclient import TestClient
 
-from overhave import OverhaveEmulationSettings, db, OverhaveApiAuthenticator, OverhaveApiAuthenticatorSettings
-from overhave import overhave_api
-from overhave.db import DraftStatus, TestRunStatus, TestReportStatus
-from overhave.transport.http.base_client import BearerAuth
+from overhave import (
+    OverhaveApiAuthenticator,
+    OverhaveApiAuthenticatorSettings,
+    OverhaveEmulationSettings,
+    db,
+    overhave_api,
+)
+from overhave.db import DraftStatus, TestReportStatus, TestRunStatus
 from overhave.storage import (
     AuthStorage,
     DraftModel,
@@ -30,11 +34,13 @@ from overhave.storage import (
     SystemUserModel,
     SystemUserStorage,
     TagModel,
+    TestRunModel,
     TestRunStorage,
     TestUserModel,
     TestUserSpecification,
-    TestUserStorage, TestRunModel,
+    TestUserStorage,
 )
+from overhave.transport.http.base_client import BearerAuth
 from overhave.utils import get_current_time
 from tests.db_utils import create_test_session
 

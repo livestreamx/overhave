@@ -4,7 +4,7 @@ from faker import Faker
 from httpx import HTTPStatusError
 
 from overhave import db
-from overhave.storage import TestRunModel, FeatureModel
+from overhave.storage import FeatureModel, TestRunModel
 from overhave.transport.http.api_client.client import OverhaveApiClient
 
 
