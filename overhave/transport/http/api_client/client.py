@@ -188,7 +188,7 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
             "Start get test users with feature_type: %s and allow_update: %s", feature_type, allow_update
         )
         response = self._get(
-            url=httpx.URL("{self._settings.url}/test_user/list"),
+            url=httpx.URL(f"{self._settings.url}/test_user/list"),
             params={
                 'feature_type': feature_type,
                 'allow_update': allow_update,
