@@ -5,7 +5,7 @@ from unittest import mock
 
 import typer
 from pydantic import SecretStr
-from settings import OverhaveDemoAppLanguage, OverhaveDemoSettingsGenerator
+from .settings import OverhaveDemoAppLanguage, OverhaveDemoSettingsGenerator
 
 from overhave import (
     OverhaveAdminContext,
