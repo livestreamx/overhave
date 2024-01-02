@@ -1,3 +1,4 @@
+import enum
 from datetime import datetime
 from typing import Literal
 
@@ -55,3 +56,39 @@ class ApiTestRunResponse(BaseModel):
     report: str | None
     traceback: str | None
     scenario_id: int
+
+
+class EmulationStatus(enum.StrEnum):
+    CREATED = "CREATED"
+    REQUESTED = "REQUESTED"
+    READY = "READY"
+    ERROR = "ERROR"
+
+
+class ApiTestUserResponse(BaseModel):
+    id: int
+    created_at: datetime
+    key: str
+    name: str
+    created_by: str
+    specification: dict[str, str | None]
+    feature_type_id: int
+    feature_type: ApiFeatureTypeResponse
+    allow_update: bool
+    changed_at: datetime
+
+
+class ApiEmulationResponse(BaseModel):
+    id: int
+    command: str
+    test_user: ApiTestUserResponse
+
+
+class ApiEmulationRunResponse(BaseModel):
+    id: int
+    emulation_id: int
+    changed_at: datetime
+    status: EmulationStatus
+    port: int | None
+    initiated_by: str
+    emulation: ApiEmulationResponse

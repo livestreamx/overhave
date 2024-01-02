@@ -5,7 +5,7 @@ import httpx
 
 from overhave.transport.http import BaseHttpClient, BearerAuth
 from overhave.transport.http.api_client.models import ApiFeatureResponse, ApiFeatureTypeResponse, ApiTagResponse, \
-    ApiTestRunResponse
+    ApiTestRunResponse, ApiEmulationRunResponse
 from overhave.transport.http.api_client.settings import OverhaveApiClientSettings
 from overhave.transport.http.base_client import HttpMethod
 
@@ -148,3 +148,13 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         logger.debug("Create test run successfully")
 
         return response.json()
+
+    def get_emulation_runs(self, test_user_id: int | None = None):
+        logger.debug("Stat get list of EmulationRun")
+        params = {'test_user_id': test_user_id} if test_user_id else {}
+        response = self._get(
+            url=httpx.URL(f"{self._settings.url}/emulation/run/list"),
+            params=params,
+        )
+        logger.debug("Get list of EmulationRun successfully")
+        return [ApiEmulationRunResponse.model_validate(data) for data in response.json()]
