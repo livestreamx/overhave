@@ -22,7 +22,3 @@ def drop_all(ctx: typer.Context) -> None:
     """Drop all metadata tables, attributes, schema."""
     typer.confirm("Does it really need?", abort=True)
     drop_schema(config=ctx.obj)
-
-
-if __name__ == "__main__":
-    db_app()
