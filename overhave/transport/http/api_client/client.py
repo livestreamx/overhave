@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Any, Mapping
 
@@ -206,6 +207,6 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         logger.debug(f"Start update user specification by user_id: {user_id}")
         self._put(
             url=httpx.URL(f"{self._settings.url}/test_user/{user_id}/specification"),
-            data=specification,
+            json=json.dumps(specification),
         )
         logger.debug("Update user specification successfully")

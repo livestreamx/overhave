@@ -9,7 +9,6 @@ from overhave.transport.http.api_client.client import OverhaveApiClient
 class TestFeatureTypesApiClient:
     """Integration tests for Overhave FeatureTypes API Client."""
 
-    # TODO: этот тест как-то влияет на другой. разобраться почему.
     def test_get_feature_types(self, api_client: OverhaveApiClient, test_feature_type: FeatureTypeModel) -> None:
         feature_types = api_client.get_feature_types()
         assert len(feature_types) == 1

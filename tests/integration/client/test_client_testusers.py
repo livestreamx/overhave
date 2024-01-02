@@ -1,16 +1,11 @@
-import json
 
 import pytest as pytest
 from faker import Faker
-from fastapi.testclient import TestClient
 from httpx import HTTPStatusError
 
 from overhave import db
 from overhave.storage import TestUserModel, TestUserSpecification
 from overhave.transport.http.api_client.client import OverhaveApiClient
-from overhave.transport.http.base_client import BearerAuth
-from tests.integration.api.conftest import validate_content_null
-from tests.objects import LIST_TESTUSER_MODEL_ADAPTER
 
 
 @pytest.mark.parametrize("test_user_role", [db.Role.user], indirect=True)
@@ -56,11 +51,11 @@ class TestTestUserApiClient:
     def test_get_test_user_list_feature_type_empty(
         self, api_client: OverhaveApiClient, faker: Faker, allow_update: bool
     ) -> None:
-        test_users = api_client.get_test_users(
-            feature_type=faker.word(),
-            allow_update=allow_update,
-        )
-        assert len(test_users) == 0
+        with pytest.raises(HTTPStatusError):
+            api_client.get_test_users(
+                feature_type=faker.word(),
+                allow_update=allow_update,
+            )
 
     def test_get_test_user_list(
         self, api_client: OverhaveApiClient, test_testuser: TestUserModel,

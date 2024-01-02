@@ -379,3 +379,8 @@ def test_api_bearer_auth(
     service_system_user: SystemUserModel, api_authenticator: OverhaveApiAuthenticator
 ) -> BearerAuth:
     return api_authenticator.get_bearer_auth(username=service_system_user.login, password=service_system_user.password)
+
+
+@pytest.fixture(scope="module")
+def test_new_specification() -> TestUserSpecification:
+    return TestUserSpecification({"new_test": "new_value"})

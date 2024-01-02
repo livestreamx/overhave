@@ -22,11 +22,6 @@ def mock_default_value() -> str:
     return ""
 
 
-@pytest.fixture(scope="module")
-def test_new_specification() -> TestUserSpecification:
-    return TestUserSpecification({"new_test": "new_value"})
-
-
 def validate_content_null(response: httpx.Response, statement: bool) -> None:
     assert (response.content.decode() == "null") is statement
 
