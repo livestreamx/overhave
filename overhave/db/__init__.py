@@ -6,6 +6,7 @@ from .tables import (
     Emulation,
     EmulationRun,
     Feature,
+    FeatureInWorkInfo,
     FeatureTagsAssociationTable,
     FeatureType,
     Scenario,
