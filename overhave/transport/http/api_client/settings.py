@@ -15,3 +15,12 @@ class OverhaveApiAuthenticatorSettings(BaseHttpClientSettings):
     @property
     def get_auth_token_url(self) -> httpx.URL:
         return httpx.URL(f"{self.url}/{self.auth_token_path}")
+
+
+class OverhaveApiClientSettings(BaseHttpClientSettings):
+    """settings."""
+
+    auth_token: str
+
+    class Config:
+        env_prefix = "OVERHAVE_API_CLIENT"

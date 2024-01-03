@@ -6,3 +6,5 @@ class HttpMethod(enum.StrEnum):
 
     GET = "get"
     POST = "post"
+    PUT = "put"
+    DELETE = "delete"
