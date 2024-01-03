@@ -5,7 +5,6 @@ from unittest import mock
 
 import typer
 from pydantic import SecretStr
-from .settings import OverhaveDemoAppLanguage, OverhaveDemoSettingsGenerator
 
 from overhave import (
     OverhaveAdminContext,
@@ -23,6 +22,8 @@ from overhave.cli.admin import _get_admin_app
 from overhave.cli.consumers import _run_consumer
 from overhave.cli.synchronizer import _create_synchronizer, _create_validator
 from overhave.scenario.parser.parser import BaseScenarioParserError
+
+from .settings import OverhaveDemoAppLanguage, OverhaveDemoSettingsGenerator
 
 logger = logging.getLogger(__name__)
 
