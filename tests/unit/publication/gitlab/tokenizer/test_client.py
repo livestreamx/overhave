@@ -24,8 +24,8 @@ class TestTokenizerClient:
         request_mock.json = MagicMock(return_value={"token": token_mock})
 
         with patch.object(TokenizerClient, "_make_request", return_value=request_mock) as make_request:
-            tokenizerClient = client.get_token(draft_id_mock)
-            assert tokenizerClient.token == token_mock
+            tokenizer_client = client.get_token(draft_id_mock)
+            assert tokenizer_client.token == token_mock
             make_request.assert_called_once()
 
     @pytest.mark.parametrize(
