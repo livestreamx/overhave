@@ -1,6 +1,7 @@
 from typing import Callable, Mapping, Sequence, cast
 
 import pytest
+from _pytest.fixtures import FixtureRequest
 from faker import Faker
 from pytest_mock import MockFixture
 
@@ -65,6 +66,16 @@ def test_tokenizer_client_settings_factory(
         )
 
     return get_tokenizer_settings
+
+
+@pytest.fixture()
+def test_tokenizer_client(request: FixtureRequest) -> TokenizerClient:
+    return TokenizerClient(
+        settings=TokenizerClientSettings(
+            enabled=True,
+            **request.param,
+        )
+    )
 
 
 @pytest.fixture()
