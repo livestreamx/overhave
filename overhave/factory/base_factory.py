@@ -29,6 +29,7 @@ from overhave.storage import (
 )
 from overhave.test_execution import PytestRunner, StepCollector
 from overhave.transport import S3Manager
+from overhave.transport.redis.deps import make_redis, get_redis_settings
 
 
 class IOverhaveFactory(Generic[TApplicationContext], abc.ABC):
@@ -120,7 +121,7 @@ class BaseOverhaveFactory(IOverhaveFactory[TApplicationContext]):
 
     @cached_property
     def _emulation_storage(self) -> EmulationStorage:
-        return EmulationStorage(settings=self.context.emulation_settings)
+        return EmulationStorage(settings=self.context.emulation_settings, redis=make_redis(get_redis_settings()))
 
     @property
     def emulation_storage(self) -> IEmulationStorage:

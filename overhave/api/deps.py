@@ -82,7 +82,7 @@ def get_test_run_storage() -> ITestRunStorage:
 
 @cache
 def get_emulation_storage() -> IEmulationStorage:
-    return EmulationStorage(OverhaveEmulationSettings())
+    return EmulationStorage(OverhaveEmulationSettings(), make_redis(get_redis_settings()))
 
 
 @cache
