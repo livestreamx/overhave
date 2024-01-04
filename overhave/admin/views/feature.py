@@ -245,7 +245,7 @@ class FeatureView(ModelViewConfigured, FactoryViewUtilsMixin):
 
         data = flask.request.form
 
-        self.__class__.data_store = data
+        FeatureView.data_store = data
 
         logger.debug("Request data:\n%s", json.dumps(data))
         run_scenario_action = data.get("run")
