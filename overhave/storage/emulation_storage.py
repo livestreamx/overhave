@@ -1,15 +1,16 @@
 import abc
 import logging
-import pickle
-import socket
-from typing import cast
 
+import socket
+from typing import cast, List
+
+import orjson
 import sqlalchemy as sa
+from redis import Redis
 
 from overhave import db
 from overhave.entities.settings import OverhaveEmulationSettings
 from overhave.storage import EmulationRunModel
-from overhave.transport.redis.deps import get_redis_settings, make_redis
 from overhave.utils import get_current_time
 
 logger = logging.getLogger(__name__)
@@ -52,10 +53,10 @@ class IEmulationStorage(abc.ABC):
 class EmulationStorage(IEmulationStorage):
     """Class for emulation runs storage."""
 
-    def __init__(self, settings: OverhaveEmulationSettings):
-        self._redis = make_redis(get_redis_settings())
-        self._redis.set("allocated_ports", pickle.dumps([]))
+    def __init__(self, settings: OverhaveEmulationSettings, redis: Redis):
+        self._redis = redis
         self._settings = settings
+        self._redis.set(self._settings.redis_ports_key, orjson.dumps([]))
         self._emulation_ports_len = len(self._settings.emulation_ports)
 
     @staticmethod
@@ -86,13 +87,13 @@ class EmulationStorage(IEmulationStorage):
             return cast(int, port)
         raise AllPortsAreBusyError("All ports are busy - could not find free port!")
 
-    def get_allocated_ports(self):
-        return pickle.loads(self._redis.get("allocated_ports"))
+    def get_allocated_ports(self) -> List[int]:
+        return orjson.loads(self._redis.get(self._settings.redis_ports_key))
 
-    def allocate_port(self, port):
+    def allocate_port(self, port: int) -> None:
         new_allocated_ports = self.get_allocated_ports()
         new_allocated_ports.append(port)
-        self._redis.set("allocated_ports", pickle.dumps(sorted(new_allocated_ports)))
+        self._redis.set(self._settings.redis_ports_key, orjson.dumps(sorted(new_allocated_ports)))
 
     def _is_port_in_use(self, port: int) -> bool:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
