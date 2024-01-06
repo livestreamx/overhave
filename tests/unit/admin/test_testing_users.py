@@ -56,8 +56,20 @@ class TestTestingUsers:
         form_mock: mock.MagicMock,
         test_is_created: bool,
     ) -> None:
-        db_test_user = db.TestUser(feature_type=db.FeatureType())
-        db_test_user.name = "kek kek"
+        db_test_user = db.TestUser(name="kek kek")
+        with pytest.raises(ValidationError):
+            test_testing_user_view.on_model_change(form=form_mock, model=db_test_user, is_created=test_is_created)
+
+    @pytest.mark.parametrize("user_role", [db.Role.user, db.Role.admin], indirect=True)
+    @pytest.mark.parametrize("test_is_created", [False, True])
+    def test_key_with_spaces_for_model_raises_errors(
+        self,
+        test_testing_user_view: TestUserView,
+        current_user_mock: mock.MagicMock,
+        form_mock: mock.MagicMock,
+        test_is_created: bool,
+    ) -> None:
+        db_test_user = db.TestUser(key="kek kek")
         with pytest.raises(ValidationError):
             test_testing_user_view.on_model_change(form=form_mock, model=db_test_user, is_created=test_is_created)
 

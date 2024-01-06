@@ -1,3 +1,4 @@
+from string import ascii_letters, digits
 from typing import cast
 
 from flask_admin.form import JSONField
@@ -50,6 +51,9 @@ class TestUserView(ModelViewConfigured):
 
     _feature_type: FeatureTypeName | None = None
 
+    _russian_alphabet = "".join([chr(char) for char in range(ord("а"), ord("а") + 32)] + ["ё"])
+    _allowed_symbols = ascii_letters + digits + "_" + _russian_alphabet + _russian_alphabet.upper()
+
     def on_form_prefill(self, form: Form, id) -> None:  # type: ignore  # noqa: A002
         if not isinstance(form._obj, db.TestUser):
             return
@@ -78,8 +82,14 @@ class TestUserView(ModelViewConfigured):
                 raise ValidationError(f"Could not convert specified data into {parser.__name__} model!")
 
     def on_model_change(self, form: Form, model: db.TestUser, is_created: bool) -> None:
-        if model.name is not None and model.name.__contains__(' '):
-            raise ValidationError("Name should not contain spaces!")
+        if model.name is not None and any((char not in self._allowed_symbols) for char in model.name):
+            raise ValidationError(
+                "Name should contain only characters from russian or english alphabet, digits or underscore!"
+            )
+        if model.key is not None and any((char not in self._allowed_symbols) for char in model.key):
+            raise ValidationError(
+                "Key should contain only characters from russian or english alphabet, digits or underscore!"
+            )
         self._feature_type = cast(FeatureTypeName, model.feature_type.name)
         self._validate_json(model)
         if is_created:
