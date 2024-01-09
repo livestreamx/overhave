@@ -87,7 +87,7 @@ class EmulationStorage(IEmulationStorage):
         raise AllPortsAreBusyError("All ports are busy - could not find free port!")
 
     def get_allocated_ports(self) -> List[int]:
-        return cast(List[int], orjson.loads(str(self._redis.get(self._settings.redis_ports_key))))
+        return cast(List[int], orjson.loads(cast(bytes, self._redis.get(self._settings.redis_ports_key))))
 
     def allocate_port(self, port: int) -> None:
         new_allocated_ports = self.get_allocated_ports()
