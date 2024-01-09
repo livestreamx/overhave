@@ -1,5 +1,5 @@
 import logging
-from typing import cast, Any
+from typing import Any, cast
 
 import flask
 import werkzeug
@@ -12,7 +12,7 @@ from overhave.admin.views import FeatureView
 from overhave.admin.views.base import ModelViewConfigured
 from overhave.factory import get_admin_factory, get_test_execution_factory
 from overhave.pytest_plugin import get_proxy_manager
-from overhave.transport import TestRunTask, TestRunData
+from overhave.transport import TestRunData, TestRunTask
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +89,7 @@ class TestRunView(ModelViewConfigured):
             proxy_manager.set_factory(test_execution_factory)
             factory.threadpool.apply_async(get_test_execution_factory().test_executor.execute_test, args=(test_run_id,))
         if factory.context.admin_settings.consumer_based and not factory.redis_producer.add_task(
-                TestRunTask(data=TestRunData(test_run_id=test_run_id))
+            TestRunTask(data=TestRunData(test_run_id=test_run_id))
         ):
             flask.flash("Problems with Redis service! TestRunTask has not been sent.", category="error")
             return rendered
