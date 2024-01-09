@@ -14,7 +14,7 @@ class TestTokenizerClient:
         [{"initiator": "peka", "remote_key": "pepe", "remote_key_name": "sad-pepe", "url": "https://ya.ru"}],
         indirect=True,
     )
-    def test_tokenizer_client_get_token_works(self, test_tokenizer_client) -> None:
+    def test_tokenizer_client_get_token_works(self, test_tokenizer_client: TokenizerClient) -> None:
         token_mock = "magic_token"
         draft_id_mock = 4
 
@@ -33,7 +33,9 @@ class TestTokenizerClient:
         [{"initiator": "peka", "remote_key": "pepe", "remote_key_name": "sad-pepe"}],
         indirect=True,
     )
-    def test_tokenizer_client_get_token_url_validation_raises_error(self, test_tokenizer_client) -> None:
+    def test_tokenizer_client_get_token_url_validation_raises_error(
+        self, test_tokenizer_client: TokenizerClient
+    ) -> None:
         draft_id_mock = 4
 
         with pytest.raises(InvalidUrlException):
