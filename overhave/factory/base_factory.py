@@ -29,7 +29,7 @@ from overhave.storage import (
 )
 from overhave.test_execution import PytestRunner, StepCollector
 from overhave.transport import S3Manager
-from overhave.transport.redis.deps import make_redis, get_redis_settings
+from overhave.transport.redis.deps import get_redis_settings, make_redis
 
 
 class IOverhaveFactory(Generic[TApplicationContext], abc.ABC):

@@ -1,8 +1,7 @@
 import abc
 import logging
-
 import socket
-from typing import cast, List
+from typing import Any, List, cast
 
 import orjson
 import sqlalchemy as sa
@@ -53,7 +52,7 @@ class IEmulationStorage(abc.ABC):
 class EmulationStorage(IEmulationStorage):
     """Class for emulation runs storage."""
 
-    def __init__(self, settings: OverhaveEmulationSettings, redis: Redis):
+    def __init__(self, settings: OverhaveEmulationSettings, redis: "Redis[Any]"):
         self._redis = redis
         self._settings = settings
         self._redis.set(self._settings.redis_ports_key, orjson.dumps([]))
@@ -82,13 +81,13 @@ class EmulationStorage(IEmulationStorage):
                 return port
             logger.debug("All not allocated ports are busy!")
         for port in allocated_ports:
-            if self._is_port_in_use(cast(int, port)):
+            if self._is_port_in_use(port):
                 continue
-            return cast(int, port)
+            return port
         raise AllPortsAreBusyError("All ports are busy - could not find free port!")
 
     def get_allocated_ports(self) -> List[int]:
-        return orjson.loads(self._redis.get(self._settings.redis_ports_key))
+        return cast(List[int], orjson.loads(str(self._redis.get(self._settings.redis_ports_key))))
 
     def allocate_port(self, port: int) -> None:
         new_allocated_ports = self.get_allocated_ports()
