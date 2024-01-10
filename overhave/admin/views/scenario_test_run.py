@@ -1,14 +1,14 @@
 import logging
-from typing import Any, cast
+from typing import cast
 
 import flask
 import werkzeug
 from flask_admin import expose
+from flask_admin.model.helpers import get_mdict_item_or_list
 from flask_login import current_user
 from wtforms import Form, ValidationError
 
 from overhave import db
-from overhave.admin.views import FeatureView
 from overhave.admin.views.base import ModelViewConfigured
 from overhave.factory import get_admin_factory, get_test_execution_factory
 from overhave.pytest_plugin import get_proxy_manager
@@ -72,15 +72,13 @@ class TestRunView(ModelViewConfigured):
             raise ValidationError("Only test run initiator could delete test run result!")
 
     @staticmethod
-    def _run_test(data: dict[str, Any], rendered: werkzeug.Response) -> werkzeug.Response:
-        scenario_id = data.get(f"{_SCENARIO_PREFIX}-id")
-        scenario_text = data.get(f"{_SCENARIO_PREFIX}-text")
-        if not scenario_id or not scenario_text:
-            flask.flash("Scenario information not requested.", category="error")
-            return rendered
+    def _run_test(rendered: werkzeug.Response) -> werkzeug.Response:
+        current_test_run_id = get_mdict_item_or_list(flask.request.args, "id")
         factory = get_admin_factory()
         with db.create_session() as session:
-            scenario = factory.scenario_storage.scenario_model_by_id(session=session, scenario_id=int(scenario_id))
+            scenario = factory.scenario_storage.scenario_model_by_id(
+                session=session, scenario_id=int(current_test_run_id)
+            )
         test_run_id = factory.test_run_storage.create_testrun(scenario_id=scenario.id, executed_by=current_user.login)
         if not factory.context.admin_settings.consumer_based:
             proxy_manager = get_proxy_manager()
@@ -99,9 +97,8 @@ class TestRunView(ModelViewConfigured):
     @expose("/details/", methods=("GET", "POST"))
     def details_view(self) -> werkzeug.Response:
         rendered: werkzeug.Response = super().details_view()
-        data = FeatureView.data_store
 
         if flask.request.method == "POST":
-            return self._run_test(data, rendered)
+            return self._run_test(rendered)
 
         return cast(werkzeug.Response, super().details_view())
