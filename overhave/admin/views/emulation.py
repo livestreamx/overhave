@@ -11,6 +11,7 @@ from wtforms import Form, ValidationError
 from overhave import db
 from overhave.admin.views.base import ModelViewConfigured
 from overhave.factory import get_admin_factory
+from overhave.storage import EmulationStorage
 from overhave.transport import EmulationData, EmulationTask
 
 logger = logging.getLogger(__name__)
@@ -80,13 +81,17 @@ class EmulationView(ModelViewConfigured):
             return rendered
 
         test_user_id = data.get("test_user")
-        self._ensure_no_active_emulation_runs_for_user(test_user_id)
+        if not self._ensure_no_active_emulation_runs_for_user(test_user_id):
+            flask.flash(f"Unable to run new emulation in parallel for user {test_user_id}")
+            return rendered
 
         logger.debug("Seen emulation request")
         return self._run_emulation(emulation_id)
 
-    def _ensure_no_active_emulation_runs_for_user(self, test_user_id):
-        user_emulation_runs = self._storage.get_emulation_runs_by_test_user_id(test_user_id)
+    @staticmethod
+    def _ensure_no_active_emulation_runs_for_user(test_user_id) -> bool:
+        user_emulation_runs = EmulationStorage.get_emulation_runs_by_test_user_id(test_user_id)
         for user_emulation_run in user_emulation_runs:
             if not user_emulation_run.status.processed:
-                flask.flash(f"Unable to run new emulation in parallel for user {test_user_id}")
+                return False
+        return True
