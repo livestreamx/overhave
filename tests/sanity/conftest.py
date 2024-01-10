@@ -157,13 +157,12 @@ def flask_urlfor_handler_mock(test_db_scenario: ScenarioModel) -> mock.MagicMock
         yield flask_urlfor_handler
 
 
-@pytest.fixture
+@pytest.fixture()
 def app():
-    app = Flask(__name__)
-    return app
+    return Flask(__name__)
 
 
-@pytest.fixture
+@pytest.fixture()
 def flask_request_handler_mock(app) -> mock.MagicMock:
     with app.test_request_context(), mock.patch("flask.request") as mock_request:
         yield mock_request
