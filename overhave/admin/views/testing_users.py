@@ -51,7 +51,7 @@ class TestUserView(ModelViewConfigured):
 
     _feature_type: FeatureTypeName | None = None
 
-    _allowed_symbols = r"\w*"
+    _allowed_symbols = r"[a-zA-Z_]*"
 
     def on_form_prefill(self, form: Form, id) -> None:  # type: ignore  # noqa: A002
         if not isinstance(form._obj, db.TestUser):
@@ -81,8 +81,6 @@ class TestUserView(ModelViewConfigured):
                 raise ValidationError(f"Could not convert specified data into {parser.__name__} model!")
 
     def on_model_change(self, form: Form, model: db.TestUser, is_created: bool) -> None:
-        if model.name is not None and not fullmatch(self._allowed_symbols, model.name):
-            raise ValidationError("Name should contain only characters, digits or underscore!")
         if model.key is not None and not fullmatch(self._allowed_symbols, model.key):
             raise ValidationError("Key should contain only characters, digits or underscore!")
         self._feature_type = cast(FeatureTypeName, model.feature_type.name)
