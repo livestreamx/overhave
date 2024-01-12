@@ -16,8 +16,6 @@ from overhave.transport import TestRunData, TestRunTask
 
 logger = logging.getLogger(__name__)
 
-_SCENARIO_PREFIX = "scenario-0"
-
 
 class TestRunView(ModelViewConfigured):
     """View for :class:`TestRun` table."""
@@ -75,11 +73,14 @@ class TestRunView(ModelViewConfigured):
     def _run_test(rendered: werkzeug.Response) -> werkzeug.Response:
         current_test_run_id = get_mdict_item_or_list(flask.request.args, "id")
         factory = get_admin_factory()
+
         with db.create_session() as session:
-            scenario = factory.scenario_storage.scenario_model_by_id(
-                session=session, scenario_id=int(current_test_run_id)
+            scenario_id = (
+                session.query(db.TestRun.scenario_id).filter(db.TestRun.id == current_test_run_id).one().scenario_id
             )
-        test_run_id = factory.test_run_storage.create_testrun(scenario_id=scenario.id, executed_by=current_user.login)
+
+        test_run_id = factory.test_run_storage.create_testrun(scenario_id=scenario_id, executed_by=current_user.login)
+
         if not factory.context.admin_settings.consumer_based:
             proxy_manager = get_proxy_manager()
             test_execution_factory = get_test_execution_factory()

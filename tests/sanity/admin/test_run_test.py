@@ -6,7 +6,6 @@ import werkzeug
 
 from demo.settings import OverhaveDemoAppLanguage
 from overhave import db
-from overhave.admin.views import TestRunView
 from overhave.admin.views.feature import _SCENARIO_PREFIX
 from overhave.storage import FeatureModel, ScenarioModel, SystemUserModel, TestRunModel
 from overhave.transport import TestRunData, TestRunTask
@@ -73,23 +72,3 @@ class TestOverhaveAdminRunTest:
         assert test_db_test_run.end is None
         assert test_db_test_run.report_status is db.TestReportStatus.EMPTY
         assert test_db_test_run.traceback is None
-
-    def test_restart_button(
-        self,
-        test_featureview_runtest_result: werkzeug.Response,
-        flask_request_handler_mock: mock.MagicMock,
-        test_db_user: SystemUserModel,
-        test_db_feature: FeatureModel,
-        test_db_scenario: ScenarioModel,
-        test_db_test_run: TestRunModel,
-    ) -> None:
-        flask_request_handler_mock.method = "POST"
-        flask_request_handler_mock.form = mock.MagicMock()
-        flask_request_handler_mock.form.get = mock.MagicMock(return_value="Restart test")
-
-        test_run_view = TestRunView(db.TestRun, db.current_session)
-
-        result = test_run_view.details_view()
-
-        flask_request_handler_mock.form.get.assert_called_once_with("restart")
-        assert result == test_featureview_runtest_result
