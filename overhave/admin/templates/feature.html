@@ -75,6 +75,15 @@
         var when_type = "when";
         var then_type = "then";
 
+        function get_examples(step_text){
+            var regex = /{[^}]*}/g;
+            const matches = step_text.match(regex);
+            if (matches != null){
+                step_text = step_text + "\nExample: \n\t|text| \n\t||"
+            }
+            return step_text
+        }
+
         function draw_editor() {
             document.querySelectorAll('.editor').forEach(function(block, index) {
                 var input = document.getElementById('scenario-'.concat(index.toString(), '-text'));
@@ -99,17 +108,20 @@
                             var step = row.querySelectorAll('.code')[0];
                             var step_text = step.textContent;
                             var step_type = step.classList[1];
-                            var editor_text = editor.getValue();
 
+                            var editor_text = editor.getValue();
                             if (step_type === given_type && ! contains(editor_text, backround_prefixes)) {
+                                step_text = get_examples(step_text)
                                 editor.insert(join_text([backround_prefixes[1], with_new_line(step_text)]));
                                 return
                             }
                             if (step_type !== given_type && ! contains(editor_text, scenario_prefixes) &&
                                     ! contains(editor_text, scenario_outline_prefixes) ) {
+                                step_text = get_examples(step_text)
                                 editor.insert(join_text([with_double_indent(scenario_prefixes[1]), " My business-case example", with_new_line(step_text)]));
                                 return
                             }
+                            step_text = get_examples(step_text)
                             editor.insert(with_new_line(step_text));
                         });
                 });
@@ -250,7 +262,7 @@
                 <tr class="inserter {{ step_classes[step_type] }}">
                     <td style="width:10%;"><a href="#" class="btn btn-success btn-sm">insert</a></td>
                     <td style="width:10%;">
-                        <div class="btn btn-default btn-sm step_hint">
+                       <div class="btn btn-default btn-sm step_hint">
                             info
                             <span class="step_hint_block">{{ bdd_step.html_doc }}</span>
                         </div>
