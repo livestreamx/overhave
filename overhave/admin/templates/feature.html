@@ -71,17 +71,14 @@
         var scenario_prefixes = ['Scenario:', 'Сценарий:'];
         var scenario_outline_prefixes = ['Scenario Outline:', 'Структура сценария:'];
         var backround_prefixes = ['Background:', 'Предыстория:'];
+        var examples_prefixes = ['Examples:', 'Примеры:'];
         var given_type = "given";
         var when_type = "when";
         var then_type = "then";
 
         function get_examples(step_text){
             var regex = /{[^}]*}/g;
-            const matches = step_text.match(regex);
-            if (matches != null){
-                step_text = step_text + "\nExample: \n\t|text| \n\t||"
-            }
-            return step_text
+            return step_text.replace(regex, '<text>')
         }
 
         function draw_editor() {
@@ -108,21 +105,31 @@
                             var step = row.querySelectorAll('.code')[0];
                             var step_text = step.textContent;
                             var step_type = step.classList[1];
-
                             var editor_text = editor.getValue();
+                            var table = '|\ttext\t| \n  |\t    \t|';
+
                             if (step_type === given_type && ! contains(editor_text, backround_prefixes)) {
-                                step_text = get_examples(step_text)
-                                editor.insert(join_text([backround_prefixes[1], with_new_line(step_text)]));
+                                var step_text2 = get_examples(step_text);
+                                editor.insert(join_text([backround_prefixes[1], with_new_line(step_text2)]));
+                                if (step_text !== step_text2){
+                                    editor.insert(join_text([with_new_line(with_new_line(examples_prefixes[1])), with_new_line(table)]));
+                                }
                                 return
                             }
                             if (step_type !== given_type && ! contains(editor_text, scenario_prefixes) &&
-                                    ! contains(editor_text, scenario_outline_prefixes) ) {
-                                step_text = get_examples(step_text)
-                                editor.insert(join_text([with_double_indent(scenario_prefixes[1]), " My business-case example", with_new_line(step_text)]));
+                                ! contains(editor_text, scenario_outline_prefixes) ) {
+                                step_text2 = get_examples(step_text);
+                                editor.insert(join_text([with_double_indent(scenario_prefixes[1]), " My business-case example", with_new_line(step_text2)]));
+                                if (step_text !== step_text2){
+                                    editor.insert(join_text([with_new_line(with_new_line(examples_prefixes[1])), with_new_line(table)]));
+                                }
                                 return
                             }
-                            step_text = get_examples(step_text)
-                            editor.insert(with_new_line(step_text));
+                            step_text2 = get_examples(step_text);
+                            editor.insert(with_new_line(step_text2));
+                            if (step_text !== step_text2){
+                                editor.insert(join_text([with_new_line(with_new_line(examples_prefixes[1])), with_new_line(table)]));
+                            }
                         });
                 });
                 var add_scenario_button = document.getElementById('scenario-button');
@@ -135,7 +142,7 @@
                 $('.steps_container').each(function (index) {
                     if (this.id.search(actual_feature_type) === -1)
                         $(this).hide();
-                    else 
+                    else
                         $(this).show();
                 });
             }
@@ -262,7 +269,7 @@
                 <tr class="inserter {{ step_classes[step_type] }}">
                     <td style="width:10%;"><a href="#" class="btn btn-success btn-sm">insert</a></td>
                     <td style="width:10%;">
-                       <div class="btn btn-default btn-sm step_hint">
+                        <div class="btn btn-default btn-sm step_hint">
                             info
                             <span class="step_hint_block">{{ bdd_step.html_doc }}</span>
                         </div>
