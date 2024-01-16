@@ -1,12 +1,20 @@
+import logging
 from typing import cast
 
+import flask
 import werkzeug
 from flask_admin import expose
+from flask_admin.model.helpers import get_mdict_item_or_list
 from flask_login import current_user
 from wtforms import Form, ValidationError
 
 from overhave import db
 from overhave.admin.views.base import ModelViewConfigured
+from overhave.factory import get_admin_factory, get_test_execution_factory
+from overhave.pytest_plugin import get_proxy_manager
+from overhave.transport import TestRunData, TestRunTask
+
+logger = logging.getLogger(__name__)
 
 
 class TestRunView(ModelViewConfigured):
@@ -61,6 +69,37 @@ class TestRunView(ModelViewConfigured):
         if not (current_user.login == model.executed_by or current_user.role == db.Role.admin):
             raise ValidationError("Only test run initiator could delete test run result!")
 
+    @staticmethod
+    def _run_test(rendered: werkzeug.Response) -> werkzeug.Response:
+        current_test_run_id = get_mdict_item_or_list(flask.request.args, "id")
+        factory = get_admin_factory()
+
+        with db.create_session() as session:
+            scenario_id = (
+                session.query(db.TestRun.scenario_id).filter(db.TestRun.id == current_test_run_id).one().scenario_id
+            )
+
+        test_run_id = factory.test_run_storage.create_testrun(scenario_id=scenario_id, executed_by=current_user.login)
+
+        if not factory.context.admin_settings.consumer_based:
+            proxy_manager = get_proxy_manager()
+            test_execution_factory = get_test_execution_factory()
+            proxy_manager.clear_factory()
+            proxy_manager.set_factory(test_execution_factory)
+            factory.threadpool.apply_async(get_test_execution_factory().test_executor.execute_test, args=(test_run_id,))
+        if factory.context.admin_settings.consumer_based and not factory.redis_producer.add_task(
+            TestRunTask(data=TestRunData(test_run_id=test_run_id))
+        ):
+            flask.flash("Problems with Redis service! TestRunTask has not been sent.", category="error")
+            return rendered
+        logger.debug("Redirect to TestRun details view with test_run_id='%s'...", test_run_id)
+        return flask.redirect(flask.url_for("testrun.details_view", id=test_run_id))
+
     @expose("/details/", methods=("GET", "POST"))
     def details_view(self) -> werkzeug.Response:
+        rendered: werkzeug.Response = super().details_view()
+
+        if flask.request.method == "POST":
+            return self._run_test(rendered)
+
         return cast(werkzeug.Response, super().details_view())
