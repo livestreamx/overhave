@@ -14,28 +14,28 @@ class TestTestRunApiClient:
 
     @pytest.mark.parametrize("test_severity", [allure.severity_level.NORMAL], indirect=True)
     def test_get_test_run(
-            self,
-            api_client: OverhaveApiClient,
-            test_test_run: TestRunModel,
+        self,
+        overhave_api_client,
+        test_test_run: TestRunModel,
     ) -> None:
-        item = api_client.get_test_run(test_run_id=test_test_run.id)
+        item = overhave_api_client.get_test_run(test_run_id=test_test_run.id)
         assert item.model_dump() == test_test_run.model_dump()
 
     @pytest.mark.parametrize("test_severity", [allure.severity_level.NORMAL], indirect=True)
     def test_get_test_run_with_unknown_id(
-            self,
-            api_client: OverhaveApiClient,
-            test_test_run: TestRunModel,
-            faker: Faker,
+        self,
+        overhave_api_client,
+        test_test_run: TestRunModel,
+        faker: Faker,
     ) -> None:
         with pytest.raises(HTTPStatusError):
-            api_client.get_test_run(test_run_id=faker.random_int())
+            overhave_api_client.get_test_run(test_run_id=faker.random_int())
 
     @pytest.mark.parametrize("test_severity", [allure.severity_level.NORMAL], indirect=True)
     def test_create_test_run(
-            self,
-            api_client: OverhaveApiClient,
-            test_feature_with_scenario: FeatureModel,
+        self,
+        overhave_api_client,
+        test_feature_with_scenario: FeatureModel,
     ) -> None:
-        values = api_client.create_test_run(tag_value=test_feature_with_scenario.feature_tags[0].value)
+        values = overhave_api_client.create_test_run(tag_value=test_feature_with_scenario.feature_tags[0].value)
         assert len(values) > 0

@@ -28,7 +28,7 @@ def overhave_api_client_settings(
 
 
 @pytest.fixture()
-def api_client(
+def overhave_api_client(
     mock_envs, test_api_client: TestClient, overhave_api_client_settings: OverhaveApiClientSettings
 ) -> Iterator[OverhaveApiClient]:
     with mock.patch.object(httpx, "request", new_callable=lambda: test_api_client.request):

@@ -1,4 +1,3 @@
-
 import pytest as pytest
 from faker import Faker
 from httpx import HTTPStatusError
@@ -13,104 +12,116 @@ class TestTestUserApiClient:
     """Integration tests for Overhave TestUser API Client."""
 
     def test_get_user_by_id_empty(
-        self, api_client: OverhaveApiClient, faker: Faker,
+        self,
+        overhave_api_client,
+        faker: Faker,
     ) -> None:
         with pytest.raises(HTTPStatusError):
-            api_client.get_test_user_by_user_id(user_id=faker.random_int())
+            overhave_api_client.get_test_user_by_user_id(user_id=faker.random_int())
 
     def test_get_user_by_id(
-        self, api_client: OverhaveApiClient, test_testuser: TestUserModel,
+        self,
+        overhave_api_client,
+        test_testuser: TestUserModel,
     ) -> None:
-        test_user = api_client.get_test_user_by_user_id(user_id=test_testuser.id)
+        test_user = overhave_api_client.get_test_user_by_user_id(user_id=test_testuser.id)
         assert test_user.model_dump() == test_testuser.model_dump()
 
     def test_get_user_by_key_empty(
-        self, api_client: OverhaveApiClient, faker: Faker,
+        self,
+        overhave_api_client,
+        faker: Faker,
     ) -> None:
         with pytest.raises(HTTPStatusError):
-            api_client.get_test_user_by_user_key(user_key=faker.random_int())
+            overhave_api_client.get_test_user_by_user_key(user_key=faker.random_int())
 
     def test_get_user_by_key(
-        self, api_client: OverhaveApiClient, test_testuser: TestUserModel,
+        self,
+        overhave_api_client,
+        test_testuser: TestUserModel,
     ) -> None:
-        test_user = api_client.get_test_user_by_user_key(user_key=test_testuser.key)
+        test_user = overhave_api_client.get_test_user_by_user_key(user_key=test_testuser.key)
         assert test_user.model_dump() == test_testuser.model_dump()
 
-    def test_delete_user_by_id_empty(
-        self, api_client: OverhaveApiClient, faker: Faker
-    ) -> None:
+    def test_delete_user_by_id_empty(self, overhave_api_client, faker: Faker) -> None:
         with pytest.raises(HTTPStatusError):
-            api_client.delete_test_user(user_id=faker.random_int())
+            overhave_api_client.delete_test_user(user_id=faker.random_int())
 
-    def test_delete_user_by_id(
-        self, api_client: OverhaveApiClient, test_testuser: TestUserModel
-    ) -> None:
-        api_client.delete_test_user(user_id=test_testuser.id)
+    def test_delete_user_by_id(self, overhave_api_client, test_testuser: TestUserModel) -> None:
+        overhave_api_client.delete_test_user(user_id=test_testuser.id)
 
     @pytest.mark.parametrize("allow_update", [True, False])
-    def test_get_test_user_list_feature_type_empty(
-        self, api_client: OverhaveApiClient, faker: Faker, allow_update: bool
-    ) -> None:
+    def test_get_test_user_list_feature_type_empty(self, overhave_api_client, faker: Faker, allow_update: bool) -> None:
         with pytest.raises(HTTPStatusError):
-            api_client.get_test_users(
+            overhave_api_client.get_test_users(
                 feature_type=faker.word(),
                 allow_update=allow_update,
             )
 
     def test_get_test_user_list(
-        self, api_client: OverhaveApiClient, test_testuser: TestUserModel,
+        self,
+        overhave_api_client,
+        test_testuser: TestUserModel,
     ) -> None:
-        test_users = api_client.get_test_users(
+        test_users = overhave_api_client.get_test_users(
             feature_type=test_testuser.feature_type.name,
             allow_update=test_testuser.allow_update,
         )
         assert len(test_users) == 1
         assert test_users[0].model_dump() == test_testuser.model_dump()
 
-    def test_get_user_spec_empty(
-        self, api_client: OverhaveApiClient, faker: Faker
-    ) -> None:
+    def test_get_user_spec_empty(self, overhave_api_client, faker: Faker) -> None:
         with pytest.raises(HTTPStatusError):
-            api_client.get_test_user_specification(user_id=faker.random_int())
+            overhave_api_client.get_test_user_specification(user_id=faker.random_int())
 
     def test_get_user_spec(
-        self, api_client: OverhaveApiClient, test_testuser: TestUserModel,
+        self,
+        overhave_api_client,
+        test_testuser: TestUserModel,
     ) -> None:
-        user_spec = api_client.get_test_user_specification(user_id=test_testuser.id)
+        user_spec = overhave_api_client.get_test_user_specification(user_id=test_testuser.id)
         assert user_spec == test_testuser.specification
 
     def test_put_user_spec_no_body(
-        self, api_client: OverhaveApiClient, faker: Faker,
+        self,
+        overhave_api_client,
+        faker: Faker,
     ) -> None:
         with pytest.raises(HTTPStatusError):
-            api_client.update_test_user_specification(user_id=faker.random_int(), specification={})
+            overhave_api_client.update_test_user_specification(user_id=faker.random_int(), specification={})
 
     def test_put_user_spec_no_user(
         self,
-        api_client: OverhaveApiClient,
+        overhave_api_client,
         test_new_specification: TestUserSpecification,
         faker: Faker,
     ) -> None:
         with pytest.raises(HTTPStatusError):
-            api_client.update_test_user_specification(user_id=faker.random_int(), specification=test_new_specification)
+            overhave_api_client.update_test_user_specification(
+                user_id=faker.random_int(), specification=test_new_specification
+            )
 
     @pytest.mark.parametrize("testuser_allow_update", [False], indirect=True)
     def test_put_user_spec_not_allowed(
         self,
-        api_client: OverhaveApiClient,
+        overhave_api_client,
         test_testuser: TestUserModel,
         test_new_specification: TestUserSpecification,
     ) -> None:
         with pytest.raises(HTTPStatusError):
-            api_client.update_test_user_specification(user_id=test_testuser.id, specification=test_new_specification)
+            overhave_api_client.update_test_user_specification(
+                user_id=test_testuser.id, specification=test_new_specification
+            )
 
     @pytest.mark.parametrize("testuser_allow_update", [True], indirect=True)
     def test_put_user_spec(
         self,
-        api_client: OverhaveApiClient,
+        overhave_api_client,
         test_testuser: TestUserModel,
         test_new_specification: TestUserSpecification,
     ) -> None:
-        api_client.update_test_user_specification(user_id=test_testuser.id, specification=test_new_specification)
-        updated_user_specification = api_client.get_test_user_specification(user_id=test_testuser.id)
+        overhave_api_client.update_test_user_specification(
+            user_id=test_testuser.id, specification=test_new_specification
+        )
+        updated_user_specification = overhave_api_client.get_test_user_specification(user_id=test_testuser.id)
         assert updated_user_specification == test_new_specification
