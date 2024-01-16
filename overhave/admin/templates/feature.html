@@ -76,10 +76,6 @@
         var when_type = "when";
         var then_type = "then";
 
-        function get_examples(step_text){
-            var regex = /{[^}]*}/g;
-            return step_text.replace(regex, '<text>')
-        }
 
         function draw_editor() {
             document.querySelectorAll('.editor').forEach(function(block, index) {
@@ -106,28 +102,20 @@
                             var step_text = step.textContent;
                             var step_type = step.classList[1];
                             var editor_text = editor.getValue();
-                            var table = '|\ttext\t| \n  |\t    \t|';
+                            var was_braces = step_text.match(/{[^}]*}/g);
 
                             if (step_type === given_type && ! contains(editor_text, backround_prefixes)) {
-                                var step_text2 = get_examples(step_text);
-                                editor.insert(join_text([backround_prefixes[1], with_new_line(step_text2)]));
-                                if (step_text !== step_text2){
-                                    editor.insert(join_text([with_new_line(with_new_line(examples_prefixes[1])), with_new_line(table)]));
-                                }
-                                return
+                                editor.insert(join_text([backround_prefixes[1], with_new_line(step_text)]));
                             }
-                            if (step_type !== given_type && ! contains(editor_text, scenario_prefixes) &&
+                            else if (step_type !== given_type && ! contains(editor_text, scenario_prefixes) &&
                                 ! contains(editor_text, scenario_outline_prefixes) ) {
-                                step_text2 = get_examples(step_text);
-                                editor.insert(join_text([with_double_indent(scenario_prefixes[1]), " My business-case example", with_new_line(step_text2)]));
-                                if (step_text !== step_text2){
-                                    editor.insert(join_text([with_new_line(with_new_line(examples_prefixes[1])), with_new_line(table)]));
-                                }
-                                return
+                                editor.insert(join_text([with_double_indent(scenario_prefixes[1]), " My business-case example", with_new_line(step_text)]));
                             }
-                            step_text2 = get_examples(step_text);
-                            editor.insert(with_new_line(step_text2));
-                            if (step_text !== step_text2){
+                            else {
+                                editor.insert(with_new_line(step_text));
+                            }
+                            if (was_braces){
+                                const table = '|\ttext\t| \n  |\t    \t|';
                                 editor.insert(join_text([with_new_line(with_new_line(examples_prefixes[1])), with_new_line(table)]));
                             }
                         });
