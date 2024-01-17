@@ -13,7 +13,7 @@ class TestTestUserApiClient:
 
     def test_get_user_by_id_empty(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         faker: Faker,
     ) -> None:
         with pytest.raises(HTTPStatusError):
@@ -21,7 +21,7 @@ class TestTestUserApiClient:
 
     def test_get_user_by_id(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         test_testuser: TestUserModel,
     ) -> None:
         test_user = overhave_api_client.get_test_user_by_user_id(user_id=test_testuser.id)
@@ -29,7 +29,7 @@ class TestTestUserApiClient:
 
     def test_get_user_by_key_empty(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         faker: Faker,
     ) -> None:
         with pytest.raises(HTTPStatusError):
@@ -37,7 +37,7 @@ class TestTestUserApiClient:
 
     def test_get_user_by_key(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         test_testuser: TestUserModel,
     ) -> None:
         test_user = overhave_api_client.get_test_user_by_user_key(user_key=test_testuser.key)
@@ -47,7 +47,7 @@ class TestTestUserApiClient:
         with pytest.raises(HTTPStatusError):
             overhave_api_client.delete_test_user(user_id=faker.random_int())
 
-    def test_delete_user_by_id(self, overhave_api_client, test_testuser: TestUserModel) -> None:
+    def test_delete_user_by_id(self, overhave_api_client: OverhaveApiClient, test_testuser: TestUserModel) -> None:
         overhave_api_client.delete_test_user(user_id=test_testuser.id)
 
     @pytest.mark.parametrize("allow_update", [True, False])
@@ -60,7 +60,7 @@ class TestTestUserApiClient:
 
     def test_get_test_user_list(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         test_testuser: TestUserModel,
     ) -> None:
         test_users = overhave_api_client.get_test_users(

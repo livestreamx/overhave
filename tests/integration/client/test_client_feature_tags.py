@@ -13,7 +13,7 @@ class TestFeatureTagsApiClient:
 
     def test_get_feature_tags_item(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         test_tag: TagModel,
     ) -> None:
         item = overhave_api_client.get_feature_tags_item(value=test_tag.value)

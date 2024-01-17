@@ -15,7 +15,7 @@ class TestTestRunApiClient:
     @pytest.mark.parametrize("test_severity", [allure.severity_level.NORMAL], indirect=True)
     def test_get_test_run(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         test_test_run: TestRunModel,
     ) -> None:
         item = overhave_api_client.get_test_run(test_run_id=test_test_run.id)
@@ -24,7 +24,7 @@ class TestTestRunApiClient:
     @pytest.mark.parametrize("test_severity", [allure.severity_level.NORMAL], indirect=True)
     def test_get_test_run_with_unknown_id(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         test_test_run: TestRunModel,
         faker: Faker,
     ) -> None:
@@ -34,7 +34,7 @@ class TestTestRunApiClient:
     @pytest.mark.parametrize("test_severity", [allure.severity_level.NORMAL], indirect=True)
     def test_create_test_run(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         test_feature_with_scenario: FeatureModel,
     ) -> None:
         values = overhave_api_client.create_test_run(tag_value=test_feature_with_scenario.feature_tags[0].value)

@@ -1,8 +1,6 @@
 import json
 import logging
-from typing import Any, Mapping, cast
-
-import httpx
+from typing import cast
 
 from overhave.transport.http import BaseHttpClient, BearerAuth
 from overhave.transport.http.api_client.models import (
