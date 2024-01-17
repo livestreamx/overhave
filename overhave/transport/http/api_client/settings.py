@@ -78,4 +78,4 @@ class OverhaveApiClientSettings(BaseHttpClientSettings):
         return httpx.URL(f"{self.url}/test_user/{user_id}/specification")
 
     class Config:
-        env_prefix = "OVERHAVE_API_CLIENT"
+        env_prefix = "OVERHAVE_API_CLIENT_"
