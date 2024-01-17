@@ -139,6 +139,7 @@ class OverhaveEmulationSettings(BaseOverhavePrefix):
     emulation_bind_ip: str = "0.0.0.0"  # noqa: S104
     # Ports for emulation binding. Expects as string with format `["port1", "port2", ...]`
     emulation_ports: list[int] = [8080]
+    redis_ports_key: str = "allocated_ports"
 
     # As a real service, should be used follow path: `http://my-service.domain/mount`
     # where `emulation_service_url` = `http://my-service.domain` - URL for service,

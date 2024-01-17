@@ -41,6 +41,7 @@ from overhave.storage import (
     TestUserStorage,
 )
 from overhave.transport.http.base_client import BearerAuth
+from overhave.transport.redis.deps import get_redis_settings, make_redis
 from overhave.utils import get_current_time
 from tests.db_utils import create_test_session
 
@@ -82,7 +83,7 @@ def test_feature_storage() -> FeatureStorage:
 
 @pytest.fixture(scope="module")
 def test_emulation_storage(emulation_settings: OverhaveEmulationSettings) -> EmulationStorage:
-    return EmulationStorage(emulation_settings)
+    return EmulationStorage(settings=emulation_settings, redis=make_redis(get_redis_settings()))
 
 
 @pytest.fixture()
