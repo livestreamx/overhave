@@ -102,7 +102,7 @@
                             var step_text = step.textContent;
                             var step_type = step.classList[1];
                             var editor_text = editor.getValue();
-                            var was_braces = step_text.match(/<.*?>/g);
+                            var was_chevrons = step_text.match(/<([^>]+)>/g);
 
                             if (step_type === given_type && ! contains(editor_text, backround_prefixes)) {
                                 editor.insert(join_text([backround_prefixes[1], with_new_line(step_text)]));
@@ -114,8 +114,14 @@
                             else {
                                 editor.insert(with_new_line(step_text));
                             }
-                            if (was_braces){
-                                const table = '|\ttext\t| \n  |\t    \t|';
+                            if (was_chevrons){
+                                var title_line_table = '|';
+                                var empty_line_table = '|';
+                                for (var i = 0; i < was_chevrons.length; i++){
+                                    title_line_table += '\t' + was_chevrons[i].substring(1, was_chevrons[i].length - 1) + '\t|';
+                                    empty_line_table += '\t' + (' '.repeat(was_chevrons[i].length-2)) + '\t|';
+                                }
+                                const table = title_line_table + '\n  ' + empty_line_table + '\n  ';
                                 editor.insert(join_text([with_new_line(with_new_line(examples_prefixes[1])), with_new_line(table)]));
                             }
                         });
