@@ -135,6 +135,7 @@ class FeatureView(ModelViewConfigured, FactoryViewUtilsMixin):
         "last_edited_at",
         "last_edited_by",
         "released",
+        "in_work",
     )
     form_excluded_columns = (
         "created_at",

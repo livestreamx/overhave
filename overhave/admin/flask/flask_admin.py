@@ -14,7 +14,6 @@ from overhave.admin.views import (
     TestUserView,
     UserView,
 )
-from overhave.admin.views.feature_in_work import FeatureInWorkView
 from overhave.factory import IAdminFactory
 
 
@@ -32,7 +31,6 @@ def get_flask_admin(factory: IAdminFactory) -> Admin:
     admin.add_link(MenuLink(name="Log out", url="/logout"))
     views_list = [
         FeatureView(db.Feature, db.current_session, category="Scenarios", name="Features"),
-        FeatureInWorkView(db.FeatureInWorkInfo, db.current_session, category="Scenarios", name="Feature in work"),
         TestRunView(db.TestRun, db.current_session, category="Scenarios", name="Test runs"),
         DraftView(db.Draft, db.current_session, category="Scenarios", name="Versions"),
         TagsView(db.Tags, db.current_session, category="Scenarios", name="Tags"),
