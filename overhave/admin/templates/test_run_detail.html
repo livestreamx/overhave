@@ -16,10 +16,13 @@
             {{ render_allure_button(model) }}
         {% endif %}
     {% else %}
-        <meta http-equiv="refresh" content="5">
+<meta http-equiv="refresh" content="5" xmlns="http://www.w3.org/1999/html">
     {% endif %}
     {% if model.status == 'SUCCESS' %}
         {{ render_pr_button(model) }}
+    {% endif %}
+    {% if model.status == 'FAILED' %}
+        {{ render_restart_button(model) }}
     {% endif %}
 {% endblock %}
 
@@ -40,5 +43,11 @@
     <form action="/pull_request/{{ model.id }}" method="GET">
         <input type="hidden" name="published_by" value="{{ admin_view.current_user }}" />
         <button class="button request-btn" type="submit">Create pull-request</button>
+    </form>
+{%  endmacro %}
+
+{% macro render_restart_button(model) %}
+    <form action="{{ url_for('testrun.details_view', id=model.scenario.feature_id) }}" method="POST">
+        <button type="submit" class="button restart-btn" name="restart">Restart test</button>
     </form>
 {%  endmacro %}

@@ -242,6 +242,7 @@ class FeatureView(ModelViewConfigured, FactoryViewUtilsMixin):
             return rendered
 
         data = flask.request.form
+
         logger.debug("Request data:\n%s", json.dumps(data))
         run_scenario_action = data.get("run")
         if not run_scenario_action:

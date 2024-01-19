@@ -16,9 +16,15 @@
 
 {% macro render_go_button(model) %}
     <form action="/emulations/{{ model.port }}" target="_blank">
-        <button class="button default-btn">Go to emulation</button>
+        <button class="button default-btn" id="goToEmulationBtn"onclick="disableButton()">Go to emulation</button>
+        <script>
+            function disableButton() {
+                let myButton = document.getElementById("goToEmulationBtn");
+                myButton.disabled = true;
+            }
+        </script>
     </form>
-{%  endmacro %}
+{% endmacro %}
 
 {% macro render_edit_button(model) %}
     <a href="{{ url_for('emulation.edit_view', id=model.emulation_id) }}">
