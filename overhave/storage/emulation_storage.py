@@ -48,7 +48,6 @@ class IEmulationStorage(abc.ABC):
     def get_emulation_runs_by_test_user_id(test_user_id: int) -> list[EmulationRunModel]:
         pass
 
-
     @abc.abstractmethod
     def has_running_emulation_with_user(self, test_user_id: int) -> bool:
         pass
