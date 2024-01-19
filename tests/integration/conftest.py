@@ -1,15 +1,25 @@
 from datetime import datetime
-from typing import cast
+from typing import Iterator, cast
+from unittest import mock
 from uuid import uuid1
 
 import allure
+import httpx
 import pytest
 from _pytest.fixtures import FixtureRequest
 from faker import Faker
+from fastapi.testclient import TestClient
 
-from overhave import OverhaveEmulationSettings, db
-from overhave.db import DraftStatus
+from overhave import (
+    OverhaveApiAuthenticator,
+    OverhaveApiAuthenticatorSettings,
+    OverhaveEmulationSettings,
+    db,
+    overhave_api,
+)
+from overhave.db import DraftStatus, TestReportStatus, TestRunStatus
 from overhave.storage import (
+    AuthStorage,
     DraftModel,
     DraftStorage,
     EmulationModel,
@@ -24,11 +34,13 @@ from overhave.storage import (
     SystemUserModel,
     SystemUserStorage,
     TagModel,
+    TestRunModel,
     TestRunStorage,
     TestUserModel,
     TestUserSpecification,
     TestUserStorage,
 )
+from overhave.transport.http.base_client import BearerAuth
 from overhave.transport.redis.deps import get_redis_settings, make_redis
 from overhave.utils import get_current_time
 from tests.db_utils import create_test_session
@@ -215,6 +227,15 @@ def test_feature_with_tag(test_feature: FeatureModel, test_tag: TagModel) -> Fea
 
 
 @pytest.fixture()
+def test_feature_with_scenario(test_feature_with_tag: FeatureModel, faker: Faker) -> FeatureModel:
+    with create_test_session() as session:
+        db_scenario = db.Scenario(feature_id=test_feature_with_tag.id, text=faker.word())
+        session.add(db_scenario)
+        session.flush()
+        return test_feature_with_tag
+
+
+@pytest.fixture()
 def test_features_with_tag(test_features: list[FeatureModel], test_tag: TagModel) -> list[FeatureModel]:
     features = []
     with create_test_session() as session:
@@ -291,6 +312,21 @@ def test_emulation_run(service_system_user: SystemUserModel, test_emulation: Emu
         return EmulationRunModel.model_validate(emulation_run)
 
 
+@pytest.fixture()
+def test_test_run(faker: Faker, service_system_user: SystemUserModel, test_scenario: ScenarioModel) -> TestRunModel:
+    with create_test_session() as session:
+        test_run = db.TestRun(
+            scenario_id=test_scenario.id,
+            name=cast(str, faker.word()),
+            status=TestRunStatus.STARTED,
+            report_status=TestReportStatus.EMPTY,
+            executed_by=service_system_user.login,
+        )
+        session.add(test_run)
+        session.flush()
+        return TestRunModel.model_validate(test_run)
+
+
 @pytest.fixture(scope="module")
 def envs_for_mock() -> dict[str, str | None]:
     return {
@@ -325,3 +361,33 @@ def test_draft(
         session.add(draft)
         session.flush()
         return DraftModel.model_validate(draft)
+
+
+@pytest.fixture()
+def test_api_client(database) -> TestClient:
+    return TestClient(overhave_api())
+
+
+@pytest.fixture()
+def api_authenticator_settings(test_api_client: TestClient) -> OverhaveApiAuthenticatorSettings:
+    return OverhaveApiAuthenticatorSettings(url=test_api_client.base_url)
+
+
+@pytest.fixture()
+def api_authenticator(
+    mock_envs, test_api_client: TestClient, api_authenticator_settings: OverhaveApiAuthenticatorSettings
+) -> Iterator[OverhaveApiAuthenticator]:
+    with mock.patch.object(httpx, "request", new_callable=lambda: test_api_client.request):
+        yield OverhaveApiAuthenticator(settings=api_authenticator_settings, auth_storage=AuthStorage())
+
+
+@pytest.fixture()
+def test_api_bearer_auth(
+    service_system_user: SystemUserModel, api_authenticator: OverhaveApiAuthenticator
+) -> BearerAuth:
+    return api_authenticator.get_bearer_auth(username=service_system_user.login, password=service_system_user.password)
+
+
+@pytest.fixture(scope="module")
+def test_new_specification() -> TestUserSpecification:
+    return TestUserSpecification({"new_test": "new_value"})
