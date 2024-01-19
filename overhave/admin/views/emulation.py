@@ -90,8 +90,5 @@ class EmulationView(ModelViewConfigured):
 
     @staticmethod
     def _ensure_no_active_emulation_runs_for_user(test_user_id) -> bool:
-        user_emulation_runs = EmulationStorage.get_emulation_runs_by_test_user_id(test_user_id)
-        for user_emulation_run in user_emulation_runs:
-            if not user_emulation_run.status.processed:
-                return False
-        return True
+        factory = get_admin_factory()
+        return factory.emulation_storage.has_running_emulation_with_user(test_user_id)

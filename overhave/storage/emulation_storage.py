@@ -1,7 +1,7 @@
 import abc
 import logging
 import socket
-from typing import Any, List, cast
+from typing import Any, List, cast, Tuple
 
 import orjson
 import sqlalchemy as sa
@@ -49,6 +49,11 @@ class IEmulationStorage(abc.ABC):
         pass
 
 
+    @abc.abstractmethod
+    def has_running_emulation_with_user(self, test_user_id: int) -> bool:
+        pass
+
+
 class EmulationStorage(IEmulationStorage):
     """Class for emulation runs storage."""
 
@@ -87,11 +92,15 @@ class EmulationStorage(IEmulationStorage):
         raise AllPortsAreBusyError("All ports are busy - could not find free port!")
 
     def get_allocated_ports(self) -> List[int]:
-        return cast(List[int], orjson.loads(cast(bytes, self._redis.get(self._settings.redis_ports_key))))
+        port_user_pairs = self.get_allocated_port_user_pairs()
+        return [port for port, _ in port_user_pairs]
 
-    def allocate_port(self, port: int) -> None:
-        new_allocated_ports = self.get_allocated_ports()
-        new_allocated_ports.append(port)
+    def get_allocated_port_user_pairs(self) -> List[Tuple[int, int]]:
+        return cast(List[Tuple[int, int]], orjson.loads(cast(bytes, self._redis.get(self._settings.redis_ports_key))))
+
+    def allocate_port_for_user(self, port: int, test_user_id: int) -> None:
+        new_allocated_ports = self.get_allocated_port_user_pairs()
+        new_allocated_ports.append((port, test_user_id))
         self._redis.set(self._settings.redis_ports_key, orjson.dumps(sorted(new_allocated_ports)))
 
     def _is_port_in_use(self, port: int) -> bool:
@@ -103,7 +112,7 @@ class EmulationStorage(IEmulationStorage):
             emulation_run = session.query(db.EmulationRun).filter(db.EmulationRun.id == emulation_run_id).one()
             emulation_run.status = db.EmulationStatus.REQUESTED
             emulation_run.port = self._get_next_port()
-            self.allocate_port(emulation_run.port)
+            self.allocate_port_for_user(emulation_run.port, emulation_run.emulation.test_user_id)
             emulation_run.changed_at = get_current_time()
             return EmulationRunModel.model_validate(emulation_run)
 
@@ -136,3 +145,11 @@ class EmulationStorage(IEmulationStorage):
                 session.query(db.EmulationRun).where(db.EmulationRun.emulation_id.in_(emulation_ids_query)).all()
             )
             return [EmulationRunModel.model_validate(x) for x in emulation_runs]
+
+    def has_running_emulation_with_user(self, test_user_id: int) -> bool:
+        port_user_pairs = self.get_allocated_port_user_pairs()
+
+        for port, user in port_user_pairs:
+            if user == test_user_id and self._is_port_in_use(port):
+                return True
+        return False
