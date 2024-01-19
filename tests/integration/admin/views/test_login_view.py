@@ -4,7 +4,6 @@ import pytest
 from flask.testing import FlaskClient
 
 from overhave import OverhaveAdminApp
-from tests.db_utils import create_test_session
 
 
 @pytest.fixture(scope="module")
