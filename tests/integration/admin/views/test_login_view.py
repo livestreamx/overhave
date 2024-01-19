@@ -36,8 +36,7 @@ class TestLoginView:
         test_client: FlaskClient,
     ) -> None:
         test_app.config["WTF_CSRF_ENABLED"] = False
-        with create_test_session():
-            response = test_client.post("/login", data={"username": "kek", "password": "12345"}, follow_redirects=True)
+        response = test_client.post("/login", data={"username": "kek", "password": "12345"}, follow_redirects=True)
 
         assert "Username 'kek' is not registered!" in response.data.decode(
             "utf-8"
