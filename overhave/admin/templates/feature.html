@@ -71,9 +71,11 @@
         var scenario_prefixes = ['Scenario:', 'Сценарий:'];
         var scenario_outline_prefixes = ['Scenario Outline:', 'Структура сценария:'];
         var backround_prefixes = ['Background:', 'Предыстория:'];
+        var examples_prefixes = ['Examples:', 'Примеры:'];
         var given_type = "given";
         var when_type = "when";
         var then_type = "then";
+
 
         function draw_editor() {
             document.querySelectorAll('.editor').forEach(function(block, index) {
@@ -100,17 +102,28 @@
                             var step_text = step.textContent;
                             var step_type = step.classList[1];
                             var editor_text = editor.getValue();
+                            var was_chevrons = step_text.match(/<([^>]+)>/g);
 
                             if (step_type === given_type && ! contains(editor_text, backround_prefixes)) {
                                 editor.insert(join_text([backround_prefixes[1], with_new_line(step_text)]));
-                                return
                             }
-                            if (step_type !== given_type && ! contains(editor_text, scenario_prefixes) &&
-                                    ! contains(editor_text, scenario_outline_prefixes) ) {
+                            else if (step_type !== given_type && ! contains(editor_text, scenario_prefixes) &&
+                                ! contains(editor_text, scenario_outline_prefixes) ) {
                                 editor.insert(join_text([with_double_indent(scenario_prefixes[1]), " My business-case example", with_new_line(step_text)]));
-                                return
                             }
-                            editor.insert(with_new_line(step_text));
+                            else {
+                                editor.insert(with_new_line(step_text));
+                            }
+                            if (was_chevrons){
+                                var title_line_table = '|';
+                                var empty_line_table = '|';
+                                for (var i = 0; i < was_chevrons.length; i++){
+                                    title_line_table += '\t' + was_chevrons[i].substring(1, was_chevrons[i].length - 1) + '\t|';
+                                    empty_line_table += '\t' + (' '.repeat(was_chevrons[i].length-2)) + '\t|';
+                                }
+                                const table = title_line_table + '\n  ' + empty_line_table + '\n  ';
+                                editor.insert(join_text([with_new_line(with_new_line(examples_prefixes[1])), with_new_line(table)]));
+                            }
                         });
                 });
                 var add_scenario_button = document.getElementById('scenario-button');
@@ -123,7 +136,7 @@
                 $('.steps_container').each(function (index) {
                     if (this.id.search(actual_feature_type) === -1)
                         $(this).hide();
-                    else 
+                    else
                         $(this).show();
                 });
             }
