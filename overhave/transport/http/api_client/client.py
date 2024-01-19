@@ -105,7 +105,7 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         )
         logger.debug("Create test run successfully")
 
-        return response.json()
+        return cast(list[str], response.json())
 
     def get_emulation_runs(self, test_user_id: int) -> list[ApiEmulationRunResponse]:
         logger.debug("Start get list of EmulationRun")
@@ -122,7 +122,7 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         logger.debug("Start get test user by user_id: %s", user_id)
         response = self._make_request(
             method=HttpMethod.GET,
-            url=self._settings.test_user_path,
+            url=self._settings.get_test_user_url,
             params={"user_id": user_id},
             auth=BearerAuth(self._settings.auth_token),
         )
@@ -133,7 +133,7 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         logger.debug("Start get test user by user_key: %s", user_key)
         response = self._make_request(
             method=HttpMethod.GET,
-            url=self._settings.test_user_path,
+            url=self._settings.get_test_user_url,
             params={"user_key": user_key},
             auth=BearerAuth(self._settings.auth_token),
         )
@@ -144,7 +144,7 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
         logger.debug("Start get test users with feature_type: %s and allow_update: %s", feature_type, allow_update)
         response = self._make_request(
             method=HttpMethod.GET,
-            url=self._settings.test_user_list_path,
+            url=self._settings.get_test_user_list_url,
             params={
                 "feature_type": feature_type,
                 "allow_update": allow_update,
@@ -171,7 +171,7 @@ class OverhaveApiClient(BaseHttpClient[OverhaveApiClientSettings]):
             auth=BearerAuth(self._settings.auth_token),
         )
         logger.debug("Get user specification successfully")
-        return response.json()
+        return cast(dict[str, str | None], response.json())
 
     def update_test_user_specification(self, user_id: int, specification: dict[str, str | None]) -> None:
         logger.debug("Start update user specification by user_id: %s", user_id)

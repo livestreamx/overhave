@@ -65,7 +65,7 @@ class OverhaveApiClientSettings(BaseHttpClientSettings):
 
     @property
     def get_test_user_url(self) -> httpx.URL:
-        return httpx.URL(f"{self.url}/{self.test_user}")
+        return httpx.URL(f"{self.url}/{self.test_user_path}")
 
     @property
     def get_test_user_list_url(self) -> httpx.URL:

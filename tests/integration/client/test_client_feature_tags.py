@@ -21,7 +21,7 @@ class TestFeatureTagsApiClient:
 
     def test_get_feature_tags_with_unknown_value(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         faker: Faker,
     ) -> None:
         with pytest.raises(HTTPStatusError):
@@ -29,7 +29,7 @@ class TestFeatureTagsApiClient:
 
     def test_get_feature_tags_list(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         test_tag: TagModel,
     ) -> None:
         items = overhave_api_client.get_feature_tags_list(value=test_tag.value)
@@ -38,7 +38,7 @@ class TestFeatureTagsApiClient:
 
     def test_get_feature_tags_list_with_unknown_value(
         self,
-        overhave_api_client,
+        overhave_api_client: OverhaveApiClient,
         faker: Faker,
     ) -> None:
         items = overhave_api_client.get_feature_tags_list(value=faker.word())

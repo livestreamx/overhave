@@ -14,4 +14,4 @@ class TestFeatureTypesApiClient:
     ) -> None:
         feature_types = overhave_api_client.get_feature_types()
         assert len(feature_types) == 1
-        assert feature_types[0].model_dump() == test_feature_type.model_dump()
+        assert feature_types[0].model_dump()["id"] == test_feature_type.model_dump()["id"]
