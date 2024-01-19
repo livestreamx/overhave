@@ -24,8 +24,7 @@ class TestLoginView:
         mock_support_chat_url: None,
     ) -> None:
         test_app.config["WTF_CSRF_ENABLED"] = False
-        with create_test_session():
-            response = test_client.post("/login", data={"username": "kek", "password": "12345"}, follow_redirects=True)
+        response = test_client.post("/login", data={"username": "kek", "password": "12345"}, follow_redirects=True)
         assert (
             "Username 'kek' is not registered! Please contact the <a href='https://localhost'>support channel</a>!"
             in response.data.decode("utf-8")
