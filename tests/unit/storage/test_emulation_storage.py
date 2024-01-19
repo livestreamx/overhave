@@ -17,10 +17,10 @@ class TestEmulationStorage:
         "allocated_port_user_pairs,used_ports,expected_result",
         [
             ([], [], False),
-            ([(TARGET_USER_ID, 8080), (OTHER_USER_ID, 8081)], [8080], True),
-            ([(TARGET_USER_ID, 8080), (OTHER_USER_ID, 8081)], [8081], False),
-            ([(TARGET_USER_ID, 8080), (TARGET_USER_ID, 8081), (TARGET_USER_ID, 8082)], [], True),
-            ([(TARGET_USER_ID, 8080), (TARGET_USER_ID, 8081), (TARGET_USER_ID, 8082)], [8082], True),
+            ([(8080, TARGET_USER_ID), (8081, OTHER_USER_ID)], [8080], True),
+            ([(8080, TARGET_USER_ID), (8081, OTHER_USER_ID)], [8081], False),
+            ([(8080, TARGET_USER_ID), (8081, TARGET_USER_ID), (8082, TARGET_USER_ID)], [], False),
+            ([(8080, TARGET_USER_ID), (8081, TARGET_USER_ID), (8082, TARGET_USER_ID)], [8082], True),
         ],
         ids=[
             "empty_suite",
@@ -55,7 +55,7 @@ class TestEmulationStorage:
 def get_dummy_used_ports_method(used_ports: List[int]):
     ports = used_ports.copy()
 
-    def dummy_method(self, port: int):
+    def dummy_method(port: int):
         return port in ports
 
     return dummy_method
