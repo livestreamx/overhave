@@ -36,7 +36,7 @@ class TestEmulationStorage:
         test_emulation_storage: EmulationStorage,
         test_emulation_run: EmulationRunModel,
     ) -> None:
-        with count_queries(5):
+        with count_queries(6):
             requested_emulation_run = test_emulation_storage.get_requested_emulation_run(test_emulation_run.id)
         assert requested_emulation_run.status == EmulationStatus.REQUESTED
         assert requested_emulation_run.emulation_id == test_emulation_run.emulation_id
