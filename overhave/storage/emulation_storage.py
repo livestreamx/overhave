@@ -1,7 +1,7 @@
 import abc
 import logging
 import socket
-from typing import Any, List, Tuple, cast
+from typing import Any, List, cast
 
 import orjson
 import sqlalchemy as sa
@@ -94,12 +94,12 @@ class EmulationStorage(IEmulationStorage):
         port_user_pairs = self.get_allocated_port_user_pairs()
         return [port for port, _ in port_user_pairs]
 
-    def get_allocated_port_user_pairs(self) -> List[Tuple[int, int]]:
-        return cast(List[Tuple[int, int]], orjson.loads(cast(bytes, self._redis.get(self._settings.redis_ports_key))))
+    def get_allocated_port_user_pairs(self) -> List[List[int]]:
+        return cast(List[List[int]], orjson.loads(cast(bytes, self._redis.get(self._settings.redis_ports_key))))
 
     def allocate_port_for_user(self, port: int, test_user_id: int) -> None:
         new_allocated_ports = self.get_allocated_port_user_pairs()
-        new_allocated_ports.append((port, test_user_id))
+        new_allocated_ports.append([port, test_user_id])
         self._redis.set(self._settings.redis_ports_key, orjson.dumps(sorted(new_allocated_ports)))
 
     def _is_port_in_use(self, port: int) -> bool:
