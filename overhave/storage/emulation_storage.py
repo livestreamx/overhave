@@ -1,7 +1,7 @@
 import abc
 import logging
 import socket
-from typing import Any, List, cast, Tuple
+from typing import Any, List, Tuple, cast
 
 import orjson
 import sqlalchemy as sa
