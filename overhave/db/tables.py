@@ -6,7 +6,6 @@ from typing import Dict, List
 import allure
 import sqlalchemy as sa
 import sqlalchemy_utils as su
-from flask import url_for
 from sqlalchemy import orm as so
 
 from overhave.db.base import BaseTable, PrimaryKeyMixin, PrimaryKeyWithoutDateMixin
@@ -33,11 +32,18 @@ class Tags(BaseTable, PrimaryKeyMixin):
         return self.value
 
 
+class FeatureInWorkInfo(BaseTable, PrimaryKeyMixin):
+    """FeatureInWorkInfo table."""
+
+    finished_at: datetime.datetime | None = sa.Column(sa.DateTime(timezone=True), nullable=True, doc="Finished time")
+
+
 @su.generic_repr("id", "name", "last_edited_by")
 class Feature(BaseTable, PrimaryKeyMixin):
     """Features table."""
 
     name: str = sa.Column(sa.String(), doc="Feature name", nullable=False, unique=True)
+    feature_in_work_info_id: int = sa.Column(sa.Integer(), sa.ForeignKey(FeatureInWorkInfo.id), nullable=True)
     author: str = sa.Column(
         sa.String(), sa.ForeignKey(UserRole.login), doc="Feature author login", nullable=False, index=True
     )
@@ -56,10 +62,15 @@ class Feature(BaseTable, PrimaryKeyMixin):
         doc="Feature severity choice",
     )
 
+    feature_in_work_info: so.Mapped[FeatureInWorkInfo] = so.relationship(FeatureInWorkInfo, uselist=False)
     feature_type: so.Mapped[FeatureType] = so.relationship(FeatureType, uselist=False)
     feature_tags: so.Mapped[List[Tags]] = so.relationship(
         Tags, uselist=True, order_by=Tags.value, secondary="feature_tags_association_table"
     )
+
+    @property
+    def in_work(self) -> bool:
+        return self.feature_in_work_info.finished_at is None
 
 
 class FeatureTagsAssociationTable(BaseTable, PrimaryKeyWithoutDateMixin):
@@ -122,9 +133,6 @@ class Draft(BaseTable, PrimaryKeyMixin):
     feature: so.Mapped[Feature] = so.relationship(
         Feature, uselist=False, backref=so.backref("versions", cascade="all, delete-orphan")
     )
-
-    def __html__(self) -> str:
-        return f'<a href="{url_for("draft.details_view", id=self.id)}">Draft: {self.id}</a>'
 
 
 @su.generic_repr("id", "name", "created_by")
