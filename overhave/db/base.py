@@ -94,7 +94,7 @@ def _get_query_cls(
         except AttributeError:
             pass
 
-    return so.Query(mapper, session)  # type: ignore[arg-type]
+    return so.Query(mapper, session)
 
 
 Session = so.sessionmaker(query_cls=_get_query_cls)
