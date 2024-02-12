@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "overhave"
-version = "5.0.2"
+version = "5.1.0"
 description = "Overhave - web-framework for BDD"
 readme = "README.rst"
 authors = [
@@ -37,7 +37,7 @@ WTForms = ">=2.2"
 python-ldap = "^3.2"
 ldap3 = "^2.6"
 wsgi_intercept = "^1.8"
-redis = "^4.2.0"
+redis = "^5.0.0"
 httptools = "^0.5.0"
 python-dateutil = "^2.8.1"
 alembic = "^1.4.3"
