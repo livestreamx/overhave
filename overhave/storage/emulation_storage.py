@@ -1,7 +1,7 @@
 import abc
 import logging
 import socket
-from typing import Any, List, cast
+from typing import List, cast
 
 import orjson
 import sqlalchemy as sa
@@ -56,7 +56,7 @@ class IEmulationStorage(abc.ABC):
 class EmulationStorage(IEmulationStorage):
     """Class for emulation runs storage."""
 
-    def __init__(self, settings: OverhaveEmulationSettings, redis: "Redis[Any]"):
+    def __init__(self, settings: OverhaveEmulationSettings, redis: Redis):
         self._redis = redis
         self._settings = settings
         self._redis.set(self._settings.redis_ports_key, orjson.dumps([]))

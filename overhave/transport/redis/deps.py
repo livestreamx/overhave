@@ -9,14 +9,14 @@ from overhave.transport.redis.settings import BaseRedisSettings, OverhaveRedisSe
 logger = logging.getLogger(__name__)
 
 
-def make_sentinel_master(settings: OverhaveRedisSentinelSettings) -> Redis:  # type: ignore
+def make_sentinel_master(settings: OverhaveRedisSentinelSettings) -> Redis:
     logger.info("Connecting to redis through sentinel %s", settings.urls)
     url_tuples = [(url.host, url.port) for url in settings.urls if url.host is not None and url.port is not None]
     sentinel = Sentinel(url_tuples, socket_timeout=settings.socket_timeout.total_seconds(), retry_on_timeout=True)
     return sentinel.master_for(settings.master_set, password=settings.password, db=settings.db)
 
 
-def make_regular_redis(redis_settings: OverhaveRedisSettings) -> Redis:  # type: ignore
+def make_regular_redis(redis_settings: OverhaveRedisSettings) -> Redis:
     return Redis.from_url(
         redis_settings.url.human_repr(),
         db=redis_settings.db,
@@ -24,7 +24,7 @@ def make_regular_redis(redis_settings: OverhaveRedisSettings) -> Redis:  # type:
     )
 
 
-def make_redis(redis_settings: BaseRedisSettings) -> Redis:  # type: ignore  # noqa: E501
+def make_redis(redis_settings: BaseRedisSettings) -> Redis:
     if isinstance(redis_settings, OverhaveRedisSentinelSettings):
         return make_sentinel_master(redis_settings)
 
