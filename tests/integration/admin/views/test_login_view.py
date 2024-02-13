@@ -4,6 +4,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from overhave import OverhaveAdminApp
+from tests.db_utils import count_queries
 
 
 @pytest.fixture(scope="module")
@@ -23,7 +24,8 @@ class TestLoginView:
         mock_support_chat_url: None,
     ) -> None:
         test_app.config["WTF_CSRF_ENABLED"] = False
-        response = test_client.post("/login", data={"username": "kek", "password": "12345"}, follow_redirects=True)
+        with count_queries(0):
+            response = test_client.post("/login", data={"username": "kek", "password": "12345"}, follow_redirects=True)
         assert (
             "Username 'kek' is not registered! Please contact the <a href='https://localhost'>support channel</a>!"
             in response.data.decode("utf-8")
@@ -35,7 +37,8 @@ class TestLoginView:
         test_client: FlaskClient,
     ) -> None:
         test_app.config["WTF_CSRF_ENABLED"] = False
-        response = test_client.post("/login", data={"username": "kek", "password": "12345"}, follow_redirects=True)
+        with count_queries(0):
+            response = test_client.post("/login", data={"username": "kek", "password": "12345"}, follow_redirects=True)
 
         assert "Username 'kek' is not registered!" in response.data.decode(
             "utf-8"
