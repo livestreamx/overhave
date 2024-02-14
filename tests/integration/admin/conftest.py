@@ -92,7 +92,11 @@ def test_report_with_index(test_report_without_index: Path, faker: Faker) -> Pat
 def test_app(
     clean_proxy_manager: Callable[[], IProxyManager], patched_app_admin_factory: IAdminFactory
 ) -> OverhaveAdminApp:
-    return overhave_app(factory=patched_app_admin_factory)
+    app = overhave_app(factory=patched_app_admin_factory)
+    ctx = app.app_context()
+    ctx.push()
+    app.config["SERVER_NAME"] = "localhost"
+    return app
 
 
 @pytest.fixture()
