@@ -331,6 +331,7 @@ def test_test_run(faker: Faker, service_system_user: SystemUserModel, test_scena
 def envs_for_mock() -> dict[str, str | None]:
     return {
         "OVERHAVE_EMULATION_BASE_CMD": "overhave emulate",
+        "OVERHAVE_AUTH_STRATEGY": "ldap",
     }
 
 
