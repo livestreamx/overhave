@@ -26,10 +26,7 @@ class TestLoginView:
         test_app.config["WTF_CSRF_ENABLED"] = False
         with count_queries(0):
             response = test_client.post("/login", data={"username": "kek", "password": "12345"}, follow_redirects=True)
-        assert (
-            "Username 'kek' is not registered! Please contact the <a href='https://localhost'>support channel</a>!"
-            in response.data.decode("utf-8")
-        ), '"Unauthorized" flash not be showed'
+        raise KeyError(response.data.decode("utf-8")[2370:])
 
     def test_show_flash_without_chat_for_unregistered_user(
         self,
