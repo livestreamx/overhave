@@ -1,5 +1,6 @@
 import os
 import tempfile
+from copy import deepcopy
 from pathlib import Path
 from typing import Callable
 from uuid import uuid1
@@ -92,7 +93,11 @@ def test_report_with_index(test_report_without_index: Path, faker: Faker) -> Pat
 def test_app(
     clean_proxy_manager: Callable[[], IProxyManager], patched_app_admin_factory: IAdminFactory
 ) -> OverhaveAdminApp:
-    return overhave_app(factory=patched_app_admin_factory)
+    app = overhave_app(factory=patched_app_admin_factory)
+    ctx = app.app_context()
+    ctx.push()
+    app.config["SERVER_NAME"] = "localhost"
+    return app
 
 
 @pytest.fixture()
@@ -109,7 +114,11 @@ def test_client(test_app: OverhaveAdminApp) -> FlaskClient:
 
 @pytest.fixture()
 def test_authorized_user(test_client: FlaskClient, service_system_user: SystemUserModel) -> SystemUserModel:
+    validate = deepcopy(LoginForm.validate_on_submit)
+    get_user = deepcopy(LoginForm.get_user)
     LoginForm.validate_on_submit = lambda self: True
     LoginForm.get_user = lambda self: AdminPanelUser(user_data=service_system_user)
     test_client.post("/login")
-    return service_system_user
+    yield service_system_user
+    LoginForm.validate_on_submit = validate
+    LoginForm.get_user = get_user
