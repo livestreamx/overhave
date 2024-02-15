@@ -22,7 +22,6 @@ class TestLoginView:
         test_app: OverhaveAdminApp,
         test_client: FlaskClient,
         mock_support_chat_url: None,
-        mock_envs: None,
     ) -> None:
         test_app.config["WTF_CSRF_ENABLED"] = False
         with count_queries(0):
@@ -36,7 +35,6 @@ class TestLoginView:
         self,
         test_app: OverhaveAdminApp,
         test_client: FlaskClient,
-        mock_envs: None,
     ) -> None:
         test_app.config["WTF_CSRF_ENABLED"] = False
         with count_queries(0):
