@@ -80,7 +80,7 @@ class EmulationView(ModelViewConfigured):
             return rendered
 
         test_user_id = data["test_user"]
-        if not self._ensure_no_active_emulation_runs_for_user(int(test_user_id)):
+        if self._ensure_has_active_emulation_runs_for_user(int(test_user_id)):
             flask.flash(f"Unable to run new emulation in parallel for user {test_user_id}")
             return rendered
 
@@ -88,6 +88,6 @@ class EmulationView(ModelViewConfigured):
         return self._run_emulation(emulation_id)
 
     @staticmethod
-    def _ensure_no_active_emulation_runs_for_user(test_user_id: int) -> bool:
+    def _ensure_has_active_emulation_runs_for_user(test_user_id: int) -> bool:
         factory = get_admin_factory()
         return factory.emulation_storage.has_running_emulation_with_user(test_user_id)
