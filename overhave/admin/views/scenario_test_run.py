@@ -71,15 +71,11 @@ class TestRunView(ModelViewConfigured):
 
     @staticmethod
     def _run_test(rendered: werkzeug.Response) -> werkzeug.Response:
-        current_test_run_id = get_mdict_item_or_list(flask.request.args, "id")
+        current_scenario_id = int(get_mdict_item_or_list(flask.request.args, "id"))
         factory = get_admin_factory()
-
-        with db.create_session() as session:
-            scenario_id = (
-                session.query(db.TestRun.scenario_id).filter(db.TestRun.id == current_test_run_id).one().scenario_id
-            )
-
-        test_run_id = factory.test_run_storage.create_testrun(scenario_id=scenario_id, executed_by=current_user.login)
+        test_run_id = factory.test_run_storage.create_testrun(
+            scenario_id=current_scenario_id, executed_by=current_user.login
+        )
 
         if not factory.context.admin_settings.consumer_based:
             proxy_manager = get_proxy_manager()
