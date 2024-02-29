@@ -95,11 +95,19 @@ class EmulationStorage(IEmulationStorage):
         return [port for port, _ in port_user_pairs]
 
     def get_allocated_port_user_pairs(self) -> List[List[int]]:
-        return cast(List[List[int]], orjson.loads(cast(bytes, self._redis.get(self._settings.redis_ports_key))))
+        allocated_port_user_pairs = cast(bytes | None, self._redis.get(self._settings.redis_ports_key))
+        logger.debug("allocated port user pairs: %s", allocated_port_user_pairs)
+        if allocated_port_user_pairs is None:
+            return []
+        return cast(List[List[int]], orjson.loads(allocated_port_user_pairs))
 
     def allocate_port_for_user(self, port: int, test_user_id: int) -> None:
         new_allocated_ports = self.get_allocated_port_user_pairs()
+        if [port, test_user_id] in new_allocated_ports:
+            logger.debug("port %s for user %s already in redis: %s", port, test_user_id, new_allocated_ports)
+            return
         new_allocated_ports.append([port, test_user_id])
+        logger.debug("added port %s for user %s in redis: %s", port, test_user_id, new_allocated_ports)
         self._redis.set(self._settings.redis_ports_key, orjson.dumps(sorted(new_allocated_ports)))
 
     def _is_port_in_use(self, port: int) -> bool:
