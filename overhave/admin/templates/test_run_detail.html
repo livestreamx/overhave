@@ -47,7 +47,7 @@
 {%  endmacro %}
 
 {% macro render_restart_button(model) %}
-    <form action="{{ url_for('testrun.details_view', id=model.scenario.feature_id) }}" method="POST">
+    <form action="{{ url_for('testrun.details_view', id=model.scenario.id) }}" method="POST">
         <button type="submit" class="button restart-btn" name="restart">Restart test</button>
     </form>
 {%  endmacro %}
