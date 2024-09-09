@@ -35,9 +35,9 @@ class TestStashProjectManager:
         test_stash_publisher_with_default_reviewers: StashVersionPublisher,
         faker: Faker,
     ) -> None:
-        assert test_stash_publisher_with_default_reviewers._git_publisher_settings.get_reviewers(faker.word()) == [
-            StashReviewer(user=StashReviewerInfo(name=reviewer)) for reviewer in test_default_reviewers
-        ]
+        assert test_stash_publisher_with_default_reviewers._git_publisher_settings.get_reviewers(
+            FeatureTypeName(faker.word())
+        ) == [StashReviewer(user=StashReviewerInfo(name=reviewer)) for reviewer in test_default_reviewers]
 
     def test_stash_project_settings_with_reviewers_mapping(
         self,

@@ -33,7 +33,7 @@ class TestTestUserApiClient:
         faker: Faker,
     ) -> None:
         with pytest.raises(HTTPStatusError):
-            overhave_api_client.get_test_user_by_user_key(user_key=faker.random_int())
+            overhave_api_client.get_test_user_by_user_key(user_key=faker.word())
 
     def test_get_user_by_key(
         self,

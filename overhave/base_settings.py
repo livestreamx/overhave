@@ -7,7 +7,7 @@ from typing import Any
 import sqlalchemy as sa
 import sqlalchemy.exc
 from pydantic import field_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.pool import Pool, SingletonThreadPool
 
 OVERHAVE_ENV_PREFIX = "OVERHAVE_"
@@ -16,8 +16,7 @@ OVERHAVE_ENV_PREFIX = "OVERHAVE_"
 class BaseOverhavePrefix(BaseSettings):
     """Possibility to change Overhave default settings from environment."""
 
-    class Config:
-        env_prefix = OVERHAVE_ENV_PREFIX
+    model_config = SettingsConfigDict(env_prefix=OVERHAVE_ENV_PREFIX)
 
 
 def _as_alchemy_url(db_url: str) -> sa.URL:

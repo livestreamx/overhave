@@ -2,7 +2,7 @@ import pytest
 from faker import Faker
 
 from overhave import db
-from overhave.storage import FeatureTypeModel, FeatureTypeNotExistsError, FeatureTypeStorage
+from overhave.storage import FeatureTypeModel, FeatureTypeName, FeatureTypeNotExistsError, FeatureTypeStorage
 from tests.db_utils import count_queries
 
 
@@ -43,7 +43,7 @@ class TestFeatureTypeStorage:
         with count_queries(1):
             with db.create_session() as session:
                 with pytest.raises(FeatureTypeNotExistsError):
-                    test_feature_type_storage.feature_type_by_name(session=session, name=faker.word())
+                    test_feature_type_storage.feature_type_by_name(session=session, name=FeatureTypeName(faker.word()))
 
     def test_get_all_types_empty(
         self,

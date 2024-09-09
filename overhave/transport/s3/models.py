@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field, TypeAdapter, model_validator
+from pydantic_settings import SettingsConfigDict
 
 
 class BucketModel(BaseModel):
@@ -24,15 +25,14 @@ class OwnerModel(BaseModel):
 class ObjectModel(BaseModel):
     """Model for boto3 client object."""
 
+    model_config = SettingsConfigDict(extra="allow")
+
     name: str = Field(alias="Key")
     modified_at: datetime = Field(alias="LastModified")
     etag: str = Field(alias="ETag")
     size: int = Field(alias="Size")
     storage_class: str = Field(alias="StorageClass")
     owner: OwnerModel = Field(alias="Owner")
-
-    class Config:
-        extra = "allow"
 
 
 LIST_OBJECT_MODEL_ADAPTER: TypeAdapter[list[ObjectModel]] = TypeAdapter(list[ObjectModel])

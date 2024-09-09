@@ -1,3 +1,4 @@
+# noqa: A005
 from datetime import datetime
 from typing import cast
 

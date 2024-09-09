@@ -1,7 +1,8 @@
 import httpx
-from pydantic import field_validator
-from pydantic_core.core_schema import ValidationInfo
+from pydantic import ValidationInfo, field_validator
+from pydantic_settings import SettingsConfigDict
 
+from overhave.base_settings import OVERHAVE_ENV_PREFIX
 from overhave.transport.http import BaseHttpClientSettings
 from overhave.utils import make_url
 
@@ -9,14 +10,13 @@ from overhave.utils import make_url
 class TokenizerClientSettings(BaseHttpClientSettings):
     """Important environments and settings for :class:`TokenizerClient`."""
 
+    model_config = SettingsConfigDict(env_prefix=OVERHAVE_ENV_PREFIX + "GITLAB_TOKENIZER_")
+
     enabled: bool = False
     url: httpx.URL | None = None  # type: ignore
     initiator: str = "Overhave"
     remote_key: str | None = None
     remote_key_name: str | None = None
-
-    class Config:
-        env_prefix = "OVERHAVE_GITLAB_TOKENIZER_"
 
     @field_validator("url", mode="before")
     def make_url(cls, v: str | None) -> httpx.URL | None:

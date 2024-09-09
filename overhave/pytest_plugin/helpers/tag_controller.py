@@ -6,17 +6,17 @@ import allure_commons.types
 import pytest
 from _pytest.mark.structures import MarkDecorator
 from pydantic import BaseModel
+from pydantic_settings import SettingsConfigDict
 
 
 class TagEvaluationResult(BaseModel):
     """Class for tag evaluation result."""
 
+    model_config = SettingsConfigDict(arbitrary_types_allowed=True)
+
     marker: MarkDecorator
     url: str | None
     link_type: str
-
-    class Config:
-        arbitrary_types_allowed = True
 
 
 class BaseOverhaveTagControllerException(Exception):

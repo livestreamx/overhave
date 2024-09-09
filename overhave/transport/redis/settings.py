@@ -2,11 +2,13 @@ from datetime import timedelta
 
 import yarl
 from pydantic import field_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class BaseRedisSettings(BaseSettings):
     """Base settings for Redis entities, which use for work with different framework tasks."""
+
+    model_config = SettingsConfigDict(env_prefix="OVERHAVE_REDIS_")
 
     db: int = 0
     block_timeout: timedelta = timedelta(seconds=1)
@@ -16,9 +18,6 @@ class BaseRedisSettings(BaseSettings):
     @property
     def timeout_milliseconds(self) -> int:
         return int(self.block_timeout.total_seconds() * 1000)
-
-    class Config:
-        env_prefix = "OVERHAVE_REDIS_"
 
 
 class OverhaveRedisSettings(BaseRedisSettings):
@@ -36,6 +35,8 @@ class OverhaveRedisSettings(BaseRedisSettings):
 class OverhaveRedisSentinelSettings(BaseRedisSettings):
     """Settings for Redis sentinel entities, which use for work with different framework tasks."""
 
+    model_config = SettingsConfigDict(env_prefix="OVERHAVE_REDIS_SENTINEL_")
+
     enabled: bool = False
     urls: list[yarl.URL] = [yarl.URL("redis://localhost:6379")]
     master_set: str = "foo"
@@ -50,6 +51,3 @@ class OverhaveRedisSentinelSettings(BaseRedisSettings):
             if isinstance(url, yarl.URL):
                 urls.append(url)
         return urls
-
-    class Config:
-        env_prefix = "OVERHAVE_REDIS_SENTINEL_"

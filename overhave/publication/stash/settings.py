@@ -1,3 +1,6 @@
+from pydantic_settings import SettingsConfigDict
+
+from overhave.base_settings import OVERHAVE_ENV_PREFIX
 from overhave.publication.settings import BaseGitPublisherSettings
 from overhave.storage import FeatureTypeName
 from overhave.transport import StashBranch, StashProject, StashRepository, StashReviewer, StashReviewerInfo
@@ -14,11 +17,10 @@ class OverhaveStashPublisherSettings(BaseGitPublisherSettings):
     Some pull-request parameters are also could be defined through these settings.
     """
 
+    model_config = SettingsConfigDict(env_prefix=OVERHAVE_ENV_PREFIX + "STASH_")
+
     repository_name: str  # for example 'bdd-features'
     project_key: str  # for example 'PRJ'
-
-    class Config:
-        env_prefix = "OVERHAVE_STASH_"
 
     @property
     def repository(self) -> StashRepository:
