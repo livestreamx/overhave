@@ -140,6 +140,7 @@ envlist = py311
 [testenv]
 allowlist_externals =
     make
+    docker-compose
 venv = {toxworkdir}/{[tox]isolated_build_env}
 setenv =
     VENV = {[testenv]venv}
