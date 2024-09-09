@@ -11,7 +11,6 @@ from _pytest.fixtures import FixtureRequest
 from sqlalchemy import event
 
 from overhave import db
-from overhave.db import create_session
 
 BEFORE_CURSOR_EXECUTE_EVENT_NAME = "before_cursor_execute"
 AFTER_CURSOR_EXECUTE_EVENT_NAME = "after_cursor_execute"
@@ -81,7 +80,7 @@ def validate_db_session(*args: Any, **kwargs: Any) -> None:
             break
     else:
         raise RuntimeError(
-            f"Using db.{create_session.__name__}() without {SQLCounter.__name__}! "
+            f"Using db.{db.create_session.__name__}() without {SQLCounter.__name__}! "
             f"Please, add `with {count_queries.__name__}(expected_count=n):` to your test"
         )
 
