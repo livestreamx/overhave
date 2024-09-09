@@ -29,7 +29,7 @@ def set_severity_level(
     item: Item,
 ) -> None:
     for extractor_func in _get_severity_level_from_tags, _get_parsed_feature_severity, _get_default_severity:
-        severity_lvl = extractor_func(item=item, keyword=compilation_settings.severity_keyword)  # type: ignore
+        severity_lvl = extractor_func(item=item, keyword=compilation_settings.severity_keyword)
         if severity_lvl is None:
             continue
         allure.dynamic.severity(severity_lvl)

@@ -32,7 +32,9 @@ class TestGitlabProjectManager:
         faker: Faker,
     ) -> None:
         assert (
-            test_gitlab_publisher_with_default_reviewers._git_publisher_settings.get_reviewers(faker.word())
+            test_gitlab_publisher_with_default_reviewers._git_publisher_settings.get_reviewers(
+                FeatureTypeName(faker.word())
+            )
             == test_default_reviewers
         )
 

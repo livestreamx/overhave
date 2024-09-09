@@ -9,6 +9,7 @@ from overhave.entities import (
     OverhaveFileSettings,
     ScenariosTestFileNotFound,
 )
+from overhave.storage import FeatureTypeName
 from tests.objects import FeatureTestContainer, get_test_feature_extractor
 from tests.unit.feature.conftest import get_incorrect_test_file_settings
 
@@ -24,7 +25,7 @@ class TestFeatureExtractor:
     @pytest.mark.parametrize("test_file_settings", [get_incorrect_test_file_settings()], indirect=True)
     def test_scenarios_test_file_not_found_error(self, test_file_settings: OverhaveFileSettings, faker: Faker) -> None:
         extractor = FeatureExtractor(file_settings=test_file_settings)
-        extractor._feature_types = [faker.word()]
+        extractor._feature_types = [FeatureTypeName(faker.word())]
         with pytest.raises(ScenariosTestFileNotFound):  # noqa: PT012
             extractor._check_pytest_bdd_scenarios_test_files()
 

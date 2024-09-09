@@ -1,3 +1,5 @@
+from pydantic_settings import SettingsConfigDict
+
 from overhave.publication.settings import BaseGitPublisherSettings
 from overhave.storage import FeatureTypeName
 from overhave.transport.http.gitlab_client import GitlabRepository
@@ -14,10 +16,9 @@ class OverhaveGitlabPublisherSettings(BaseGitPublisherSettings):
     Some merge-request parameters are also could be defined through these settings.
     """
 
-    repository_id: str  # for example '2034'
+    model_config = SettingsConfigDict(env_prefix="OVERHAVE_GITLAB_")
 
-    class Config:
-        env_prefix = "OVERHAVE_GITLAB_"
+    repository_id: str  # for example '2034'
 
     @property
     def repository(self) -> GitlabRepository:

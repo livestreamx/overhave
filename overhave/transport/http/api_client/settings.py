@@ -1,5 +1,6 @@
 import httpx
 from pydantic import StrictStr
+from pydantic_settings import SettingsConfigDict
 
 from overhave.base_settings import OVERHAVE_ENV_PREFIX
 from overhave.transport.http.base_client import BaseHttpClientSettings
@@ -8,10 +9,9 @@ from overhave.transport.http.base_client import BaseHttpClientSettings
 class OverhaveApiAuthenticatorSettings(BaseHttpClientSettings):
     """Settings for :class:`OverhaveApiAuthenticator`."""
 
-    auth_token_path: str = "token"
+    model_config = SettingsConfigDict(env_prefix=OVERHAVE_ENV_PREFIX + "API_AUTH_")
 
-    class Config:
-        env_prefix = OVERHAVE_ENV_PREFIX + "API_AUTH_"
+    auth_token_path: str = "token"
 
     @property
     def get_auth_token_url(self) -> httpx.URL:
@@ -20,6 +20,8 @@ class OverhaveApiAuthenticatorSettings(BaseHttpClientSettings):
 
 class OverhaveApiClientSettings(BaseHttpClientSettings):
     """Settings for :class:`OverhaveApiClient`."""
+
+    model_config = SettingsConfigDict(env_prefix="OVERHAVE_API_CLIENT_")
 
     auth_token: str
     feature_path: StrictStr = StrictStr("feature/")
@@ -76,6 +78,3 @@ class OverhaveApiClientSettings(BaseHttpClientSettings):
 
     def get_test_user_id_spec_url(self, user_id: int) -> httpx.URL:
         return httpx.URL(f"{self.url}/test_user/{user_id}/specification")
-
-    class Config:
-        env_prefix = "OVERHAVE_API_CLIENT_"

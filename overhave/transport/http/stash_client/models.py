@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Final
 
 from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import SettingsConfigDict
 
 
 class StashProject(BaseModel):
@@ -66,14 +67,13 @@ StashLinksType = dict[str, list[dict[str, str]]]
 class StashPrCreationResponse(StashBasicPrInfo):
     """Model for Stash pull-request creation response."""
 
+    model_config = SettingsConfigDict(arbitrary_types_allowed=True)
+
     created_date: datetime = Field(..., alias="createdDate")
     updated_date: datetime = Field(..., alias="updatedDate")
     pull_request_url: str | None = Field(default=None)
     traceback: Exception | None = Field(default=None)
     links: StashLinksType | None = Field(default=None)
-
-    class Config:
-        arbitrary_types_allowed = True
 
     def get_pr_url(self) -> str:
         if isinstance(self.pull_request_url, str):

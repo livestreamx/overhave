@@ -2,8 +2,8 @@ from datetime import datetime
 from typing import NewType
 
 import allure
-from pydantic.main import BaseModel
-from pydantic.types import SecretStr
+from pydantic import BaseModel, SecretStr
+from pydantic_settings import SettingsConfigDict
 
 from overhave import db
 from overhave.db import DraftStatus, Role, TestReportStatus, TestRunStatus
@@ -15,8 +15,7 @@ TestUserSpecification = NewType("TestUserSpecification", dict[str, str | None])
 class _SqlAlchemyOrmModel(BaseModel):
     """:class:`BaseModel` with enabled `orm_mode`."""
 
-    class Config:
-        from_attributes = True
+    model_config = SettingsConfigDict(from_attributes=True)
 
 
 class SystemUserModel(_SqlAlchemyOrmModel):
