@@ -28,7 +28,7 @@ jobs:
       - name: Install Compose
         uses: ndeloof/install-compose-action@v0.0.1
         with:
-          version: latest # defaults to 'latest'
-          legacy: true    # will also install in PATH as `docker-compose`
+          version: latest
+          legacy: true  # will also install in PATH as `docker-compose`
       - name: Run a multi-line script
         run: make test-docker
