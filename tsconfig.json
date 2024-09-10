@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "./static/js",
+    "rootDir": "./src/ts"
+  },
+  "include": ["src/ts/**/*"]
+}

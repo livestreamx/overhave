@@ -70,3 +70,6 @@ ENV/
 _build
 _references
 _README.rst
+
+# typescript
+node_modules
