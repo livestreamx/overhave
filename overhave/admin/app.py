@@ -28,7 +28,9 @@ def _prepare_factory(factory: IAdminFactory) -> None:
 
 def _resolved_app(factory: IAdminFactory, template_dir: Path) -> flask.Flask:
     """Resolve Flask application with :class:`IOverhaveFactory` and templates directory `template_dir`."""
-    flask_app = get_flask_app(template_folder=template_dir.as_posix())
+    flask_app = get_flask_app(
+        template_folder=template_dir.as_posix(), secret_key=factory.context.admin_settings.admin_secret_key
+    )
     get_flask_admin(factory).init_app(app=flask_app)
     login_manager = FlaskLoginManager(system_user_storage=factory.system_user_storage, login_view="login")
     login_manager.init_app(flask_app)

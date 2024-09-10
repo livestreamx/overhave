@@ -4,7 +4,7 @@ from typing import Any, Sequence
 
 import httpx
 from flask_admin.contrib.sqla import ModelView
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 
 from overhave.base_settings import BaseOverhavePrefix
 from overhave.entities.language import StepPrefixesModel
@@ -12,6 +12,8 @@ from overhave.entities.language import StepPrefixesModel
 
 class OverhaveAdminSettings(BaseOverhavePrefix):
     """Settings for Overhave Flask Admin customization."""
+
+    admin_secret_key: SecretStr = SecretStr("overhave cool secret key")
 
     # Path to custom index template. By default, contains Overhave project info.
     index_template_path: Path | None = Field(default=None)
