@@ -16,6 +16,10 @@ logger = logging.getLogger(__name__)
 
 OverhaveAdminApp = typing.NewType("OverhaveAdminApp", flask.Flask)
 
+CURRENT_DIR = Path(__file__).parent
+TEMPLATE_DIR = CURRENT_DIR / "templates"
+STATIC_DIR = CURRENT_DIR / "static"
+
 
 def _prepare_factory(factory: IAdminFactory) -> None:
     """Resolve necessary settings with :class:`IProxyManager` and prepare :class:`IOverhaveFactory` for usage."""
@@ -40,13 +44,9 @@ def _resolved_app(factory: IAdminFactory, template_dir: Path) -> flask.Flask:
 
 def overhave_app(factory: IAdminFactory) -> OverhaveAdminApp:  # noqa: C901
     """Overhave application, based on Flask."""
-    current_dir = Path(__file__).parent
-    template_dir = current_dir / "templates"
-    files_dir = current_dir / "files"
-
     _prepare_factory(factory)
-    flask_app = _resolved_app(factory=factory, template_dir=template_dir)
-    flask_app.config["FILES_DIR"] = files_dir
+    flask_app = _resolved_app(factory=factory, template_dir=TEMPLATE_DIR)
+    flask_app.config["FILES_DIR"] = STATIC_DIR
 
     @flask_app.teardown_request
     def remove_session(exception: BaseException | None) -> None:
@@ -104,10 +104,10 @@ def overhave_app(factory: IAdminFactory) -> OverhaveAdminApp:  # noqa: C901
 
     @flask_app.route("/files/<path:file>")
     def get_files(file: str) -> flask.Response:
-        return flask.send_from_directory(files_dir, file)
+        return flask.send_from_directory(STATIC_DIR, file)
 
     @flask_app.route("/favicon.ico")
     def favicon() -> flask.Response:
-        return flask.send_from_directory(files_dir, "favicon.ico", mimetype="image/vnd.microsoft.icon")
+        return flask.send_from_directory(STATIC_DIR, "favicon.ico", mimetype="image/vnd.microsoft.icon")
 
     return OverhaveAdminApp(flask_app)

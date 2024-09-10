@@ -37,7 +37,7 @@ def get_api_auth_settings() -> OverhaveApiAuthSettings:
 
 @cache
 def get_admin_files_dir() -> Path:
-    return Path(__file__).parent.parent / "admin" / "files"
+    return Path(__file__).parent.parent / "admin" / "static"
 
 
 @cache
