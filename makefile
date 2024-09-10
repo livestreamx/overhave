@@ -1,33 +1,39 @@
-CODE = overhave
 VENV ?= .venv
-WORK_DIR ?= .
-MIN_COVERAGE = 89.1
+
+CODE = overhave
+ALL = $(CODE) $(DOCS_DIR) tests demo
+
 PACKAGE_BUILD_DIR ?= dist
-PYTHON_VERSION ?= 3.11
+WORK_DIR ?= .
 
 DOCS_DIR ?= docs
 DOCS_BUILD_DIR ?= _build
 DOCS_BUILDER ?= html
 DOCS_INCLUDES_DIR = $(DOCS_DIR)/includes
 DOCS_IMAGES_DIR = $(DOCS_INCLUDES_DIR)/images
-COV_BADGE_SVG = $(DOCS_IMAGES_DIR)/coverage.svg
 DOCS_REFERENCES_DIR = $(DOCS_INCLUDES_DIR)/_references
 SPHINXAPIDOC_OPTS = -f -d 3 --ext-autodoc
+
+COV_BADGE_SVG = $(DOCS_IMAGES_DIR)/coverage.svg
 MYPY_CACHE_DIR = .mypy_cache
 
-ALL = $(CODE) $(DOCS_DIR) tests demo
+MIN_COVERAGE = 89.1
+PYTHON_VERSION ?= 3.11
 
 JOBS ?= 4
 
-pre-init:
+UNAME ?= $(shell uname)
+pre-init: pre-init-$(UNAME)
+
+pre-init-Linux:
 	sudo apt install python$(PYTHON_VERSION) python$(PYTHON_VERSION)-venv python$(PYTHON_VERSION)-dev python$(PYTHON_VERSION)-distutils gcc\
         libsasl2-dev libldap2-dev libssl-dev libpq-dev g++ libgnutls28-dev
 
-mac-pre-init:
-	brew install python@$(PYTHON_VERSION) gcc libsasl2 openldap libiconv libpq tmux libxml2 libxslt
+pre-init-Darwin:
+	brew install python@$(PYTHON_VERSION) gcc cyrus-sasl openldap
 
 init:
-	python$(PYTHON_VERSION) -m venv $(VENV)
+	test -d $(VENV) || python$(PYTHON_VERSION) -m venv $(VENV)
 	$(VENV)/bin/python -m pip install --upgrade pip
 	$(VENV)/bin/python -m pip install poetry
 	$(VENV)/bin/poetry install
