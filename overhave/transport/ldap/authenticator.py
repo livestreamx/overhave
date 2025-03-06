@@ -48,7 +48,6 @@ class LDAPAuthenticator:
             attributes=["memberOf"],
             time_limit=self._settings.timeout.seconds,
         )
-
         if connection.result.get("result", 1) != 0:
             return []
         if connection.response is None:  # pragma: no cover
@@ -58,6 +57,7 @@ class LDAPAuthenticator:
         members_of: list[LdapUserSearchAttributes] = [
             el["attributes"].get("memberOf", []) for el in connection.response if "attributes" in el
         ]
+
         if len(members_of) != 1:
             raise ValueError("Multiple or zero users with the same login")
 
