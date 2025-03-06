@@ -26,7 +26,7 @@ UNAME ?= $(shell uname)
 pre-init: pre-init-$(UNAME)
 
 pre-init-Linux:
-	sudo apt install python$(PYTHON_VERSION) python$(PYTHON_VERSION)-venv python$(PYTHON_VERSION)-dev python$(PYTHON_VERSION)-distutils gcc\
+	sudo apt install python$(PYTHON_VERSION) python$(PYTHON_VERSION)-venv python$(PYTHON_VERSION)-dev gcc\
         libsasl2-dev libldap2-dev libssl-dev libpq-dev g++ libgnutls28-dev
 
 pre-init-Darwin:
@@ -34,6 +34,7 @@ pre-init-Darwin:
 
 init:
 	test -d $(VENV) || python$(PYTHON_VERSION) -m venv $(VENV)
+	$(VENV)/bin/python -m pip install setuptools
 	$(VENV)/bin/python -m pip install --upgrade pip
 	$(VENV)/bin/python -m pip install poetry
 	$(VENV)/bin/poetry install
