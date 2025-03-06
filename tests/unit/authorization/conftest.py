@@ -1,8 +1,8 @@
 from typing import Iterator
 from unittest import mock
 
-import pytest
 import ldap3
+import pytest
 
 from overhave.transport import LDAPAuthenticator, OverhaveLdapClientSettings
 
@@ -39,17 +39,13 @@ def mocked_ldap_connection() -> ldap3.Connection:
     connection = mock.MagicMock(spec=ldap3.Connection)
     connection.search.return_value = True
     connection.result = {"result": 0}
-    connection.response = [
-        {
-            "attributes": {"memberOf": member_groups}
-        }
-    ]
+    connection.response = [{"attributes": {"memberOf": member_groups}}]
     return connection
 
 
 @pytest.fixture()
 def test_ldap_authenticator(
-        test_ldap_client_settings: OverhaveLdapClientSettings, mocked_ldap_connection: ldap3.Connection
+    test_ldap_client_settings: OverhaveLdapClientSettings, mocked_ldap_connection: ldap3.Connection
 ) -> Iterator[LDAPAuthenticator]:
     with mock.patch("ldap3.Connection", return_value=mocked_ldap_connection):
         yield LDAPAuthenticator(settings=test_ldap_client_settings)
