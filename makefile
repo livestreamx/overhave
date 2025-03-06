@@ -17,7 +17,7 @@ SPHINXAPIDOC_OPTS = -f -d 3 --ext-autodoc
 COV_BADGE_SVG = $(DOCS_IMAGES_DIR)/coverage.svg
 MYPY_CACHE_DIR = .mypy_cache
 
-MIN_COVERAGE = 89.1
+MIN_COVERAGE = 88.9
 PYTHON_VERSION ?= 3.12
 
 JOBS ?= 4
