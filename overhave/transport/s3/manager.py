@@ -16,7 +16,6 @@ from overhave.transport.s3.models import (
     DeletionResultModel,
     ObjectModel,
 )
-from overhave.transport.s3.objects import OverhaveS3Bucket
 from overhave.transport.s3.settings import OverhaveS3ManagerSettings
 from overhave.utils import make_url
 
@@ -116,8 +115,7 @@ class S3Manager:
         remote_buckets = self._get_buckets()
         logger.info("Existing remote s3 buckets: %s", remote_buckets)
         bucket_names = [model.name for model in remote_buckets]
-        for bucket in list(filter(lambda x: x.value not in bucket_names, list(OverhaveS3Bucket))):
-            self.create_bucket(bucket.value)
+        self.create_bucket(self._settings.bucket_name)
         logger.info("Successfully ensured existence of Overhave service buckets.")
 
     @_s3_error(msg="Error while getting buckets list!")
@@ -134,10 +132,10 @@ class S3Manager:
         self._ensured_client.create_bucket(**kwargs)
         logger.info("Bucket %s successfully created.", bucket)
 
-    def upload_file(self, file: Path, bucket: OverhaveS3Bucket) -> bool:
+    def upload_file(self, file: Path) -> bool:
         logger.info("Start uploading file '%s'...", file.name)
         try:
-            self._ensured_client.upload_file(file.as_posix(), str(bucket.value), file.name)
+            self._ensured_client.upload_file(file.as_posix(), self._settings.bucket_name, file.name)
             logger.info("File '%s' successfully uploaded", file.name)
             return True
         except botocore.exceptions.ClientError:

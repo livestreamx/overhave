@@ -9,7 +9,7 @@ from overhave.entities.archiver import ArchiveManager
 from overhave.entities.report_manager.models import ReportPresenceResolution
 from overhave.entities.settings import OverhaveFileSettings, OverhaveReportManagerSettings
 from overhave.storage import ITestRunStorage
-from overhave.transport import OverhaveS3Bucket, S3Manager
+from overhave.transport import S3Manager
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class ReportManager:
             return
         zip_report = self._archive_manager.archive_path(path=report_dir, extension=self._settings.archive_extension)
         logger.info("Zip Allure report: %s", zip_report)
-        upload_result = self._s3_manager.upload_file(file=zip_report, bucket=OverhaveS3Bucket.REPORTS)
+        upload_result = self._s3_manager.upload_file(file=zip_report)
         if not upload_result:
             return
         self._test_run_storage.set_report(run_id=test_run_id, status=TestReportStatus.SAVED)
@@ -111,7 +111,9 @@ class ReportManager:
         )
         zip_report_path.parent.mkdir(parents=True, exist_ok=True)
         download_success = self._s3_manager.download_file(
-            filename=zip_report_path.name, dir_to_save=zip_report_path.parent, bucket=OverhaveS3Bucket.REPORTS.value
+            filename=zip_report_path.name,
+            dir_to_save=zip_report_path.parent,
+            bucket=self._s3_manager._settings.bucket_name,
         )
         if not download_success:
             logger.error("Report archive '%s' is not available on s3 cloud!", zip_report_path.name)

@@ -26,11 +26,12 @@ def test_s3_autocreate_buckets(request: FixtureRequest) -> bool:
 
 @pytest.fixture()
 def test_s3_manager_settings(
-    test_s3_enabled: bool, test_s3_autocreate_buckets: bool, faker: Faker
+    test_s3_enabled: bool, test_s3_autocreate_buckets: bool, test_bucket_name: str, faker: Faker
 ) -> OverhaveS3ManagerSettings:
     return OverhaveS3ManagerSettings(
         enabled=test_s3_enabled,
         url="https://overhave.readthedocs.io",
+        bucket_name=test_bucket_name,
         access_key=faker.word(),
         secret_key=faker.word(),
         autocreate_buckets=test_s3_autocreate_buckets,

@@ -4,7 +4,7 @@ from pathlib import Path
 import typer
 
 from overhave.base_settings import LoggingSettings
-from overhave.transport import OverhaveS3Bucket, OverhaveS3ManagerSettings, S3Manager
+from overhave.transport import OverhaveS3ManagerSettings, S3Manager
 from overhave.utils import get_current_time
 
 s3_app = typer.Typer(short_help="Run s3 cloud interaction commands")
@@ -14,9 +14,9 @@ s3_app.add_typer(s3_bucket_app, name="bucket")
 
 
 def _check_bucket_registered(name: str) -> None:
-    if name in (item.value for item in list(OverhaveS3Bucket)):
+    if name == OverhaveS3ManagerSettings.bucket_name:
         return
-    typer.secho(f"Note: specified s3 bucket name '{name}' not presented in OverhaveS3Bucket enum!", fg="yellow")
+    typer.secho(f"Note: specified s3 bucket name '{name}' is not correct!", fg="yellow")
 
 
 def _get_s3_manager() -> S3Manager:
