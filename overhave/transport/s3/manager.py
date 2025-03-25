@@ -67,7 +67,7 @@ class S3Manager:
     """Class for s3 management with boto3 client."""
 
     def __init__(self, settings: OverhaveS3ManagerSettings):
-        self.bucket_name = settings.s3_bucket_name
+        self.bucket_name = settings.get_bucket_name
         self._settings = settings
         self._client: Client | None = None
 

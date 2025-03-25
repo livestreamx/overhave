@@ -1,4 +1,5 @@
 from datetime import timedelta
+from functools import cache
 from pathlib import Path
 
 import typer
@@ -14,11 +15,17 @@ s3_app.add_typer(s3_bucket_app, name="bucket")
 
 
 def _check_bucket_registered(name: str) -> None:
-    if name == OverhaveS3ManagerSettings.s3_bucket_name:
+    if name == _get_s3_manager_settings().bucket_name:
         return
     typer.secho(f"Note: specified s3 bucket name '{name}' is not correct!", fg="yellow")
 
 
+@cache
+def _get_s3_manager_settings() -> OverhaveS3ManagerSettings:
+    return OverhaveS3ManagerSettings()
+
+
+@cache
 def _get_s3_manager() -> S3Manager:
     LoggingSettings().setup_logging()
     manager = S3Manager(OverhaveS3ManagerSettings(autocreate_buckets=False))
