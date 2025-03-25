@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Any
+from typing import Any, cast
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -37,6 +37,4 @@ class OverhaveS3ManagerSettings(BaseSettings):
 
     @cached_property
     def get_bucket_name(self) -> str:
-        if self.bucket_name is None:
-            raise ValueError("Bucket name should be specified!")
-        return self.bucket_name
+        return cast(str, self.bucket_name)
