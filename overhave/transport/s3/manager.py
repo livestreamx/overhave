@@ -67,6 +67,10 @@ class S3Manager:
     """Class for s3 management with boto3 client."""
 
     def __init__(self, settings: OverhaveS3ManagerSettings):
+        self.bucket_name = ""
+        if settings.bucket_name:
+            self.bucket_name = settings.bucket_name
+
         self._settings = settings
         self._client: Client | None = None
 
@@ -114,8 +118,7 @@ class S3Manager:
     def _ensure_buckets_exists(self) -> None:
         remote_buckets = self._get_buckets()
         logger.info("Existing remote s3 buckets: %s", remote_buckets)
-        bucket_names = [model.name for model in remote_buckets]
-        self.create_bucket(self._settings.bucket_name)
+        self.create_bucket(self.bucket_name)
         logger.info("Successfully ensured existence of Overhave service buckets.")
 
     @_s3_error(msg="Error while getting buckets list!")
@@ -135,7 +138,7 @@ class S3Manager:
     def upload_file(self, file: Path) -> bool:
         logger.info("Start uploading file '%s'...", file.name)
         try:
-            self._ensured_client.upload_file(file.as_posix(), self._settings.bucket_name, file.name)
+            self._ensured_client.upload_file(file.as_posix(), self.bucket_name, file.name)
             logger.info("File '%s' successfully uploaded", file.name)
             return True
         except botocore.exceptions.ClientError:

@@ -113,7 +113,7 @@ class ReportManager:
         download_success = self._s3_manager.download_file(
             filename=zip_report_path.name,
             dir_to_save=zip_report_path.parent,
-            bucket=self._s3_manager._settings.bucket_name,
+            bucket=self._s3_manager.bucket_name,
         )
         if not download_success:
             logger.error("Report archive '%s' is not available on s3 cloud!", zip_report_path.name)
