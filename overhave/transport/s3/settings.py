@@ -13,6 +13,7 @@ class OverhaveS3ManagerSettings(BaseSettings):
 
     url: str | None = Field(default=None)
     region_name: str | None = Field(default=None)
+    bucket_name: str | None = Field(default=None)
     access_key: str | None = Field(default=None)
     secret_key: str | None = Field(default=None)
     verify: bool = True
@@ -25,9 +26,10 @@ class OverhaveS3ManagerSettings(BaseSettings):
         if enabled and not all(
             (
                 isinstance(values.get("url"), str),
+                isinstance(values.get("bucket_name"), str),
                 isinstance(values.get("access_key"), str),
                 isinstance(values.get("secret_key"), str),
             )
         ):
-            raise ValueError("Url, access key and secret key should be specified!")
+            raise ValueError("Url, bucket name, access key and secret key should be specified!")
         return values

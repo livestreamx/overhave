@@ -38,4 +38,4 @@ from .redis import (
     TestRunTask,
     TRedisTask,
 )
-from .s3 import OverhaveS3Bucket, OverhaveS3ManagerSettings, S3Manager
+from .s3 import OverhaveS3ManagerSettings, S3Manager

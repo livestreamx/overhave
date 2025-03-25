@@ -1,10 +1,11 @@
 from datetime import timedelta
+from functools import cache
 from pathlib import Path
 
 import typer
 
 from overhave.base_settings import LoggingSettings
-from overhave.transport import OverhaveS3Bucket, OverhaveS3ManagerSettings, S3Manager
+from overhave.transport import OverhaveS3ManagerSettings, S3Manager
 from overhave.utils import get_current_time
 
 s3_app = typer.Typer(short_help="Run s3 cloud interaction commands")
@@ -14,11 +15,17 @@ s3_app.add_typer(s3_bucket_app, name="bucket")
 
 
 def _check_bucket_registered(name: str) -> None:
-    if name in (item.value for item in list(OverhaveS3Bucket)):
+    if name == _get_s3_manager_settings().bucket_name:
         return
-    typer.secho(f"Note: specified s3 bucket name '{name}' not presented in OverhaveS3Bucket enum!", fg="yellow")
+    typer.secho(f"Note: specified s3 bucket name '{name}' is not correct!", fg="yellow")
 
 
+@cache
+def _get_s3_manager_settings() -> OverhaveS3ManagerSettings:
+    return OverhaveS3ManagerSettings()
+
+
+@cache
 def _get_s3_manager() -> S3Manager:
     LoggingSettings().setup_logging()
     manager = S3Manager(OverhaveS3ManagerSettings(autocreate_buckets=False))
@@ -30,7 +37,7 @@ def _get_s3_manager() -> S3Manager:
 def create(name: str = typer.Option(..., "-n", "--name", help="Declared s3 bucket")) -> None:
     """Create s3 bucket."""
     _check_bucket_registered(name)
-    _get_s3_manager().create_bucket(name)
+    _get_s3_manager().create_bucket()
 
 
 @s3_bucket_app.command(short_help="Delete s3 cloud bucket")
@@ -42,7 +49,7 @@ def delete(
 ) -> None:
     """Delete s3 bucket."""
     _check_bucket_registered(name)
-    _get_s3_manager().delete_bucket(name, force=force)
+    _get_s3_manager().delete_bucket(force=force)
 
 
 @s3_bucket_app.command(short_help="Remove old s3 cloud bucket files")
@@ -55,7 +62,7 @@ def remove_files(
     manager = _get_s3_manager()
     target_date = get_current_time() - timedelta(days=days)
 
-    objects = manager.get_bucket_objects(name)
+    objects = manager.get_bucket_objects()
     objects_to_delete = []
     for obj in objects:
         if not obj.modified_at < target_date:
@@ -65,7 +72,7 @@ def remove_files(
         typer.secho(f"No one object older than {days} days.")
         return
     typer.secho(f"Objects older then {days} days: {[x.name for x in objects_to_delete]}")
-    manager.delete_bucket_objects(bucket=name, objects=objects_to_delete)
+    manager.delete_bucket_objects(objects=objects_to_delete)
 
 
 @s3_app.command(short_help="Download file from s3 bucket")
@@ -76,4 +83,4 @@ def download_file(
 ) -> None:
     """Create s3 bucket."""
     _check_bucket_registered(bucket)
-    _get_s3_manager().download_file(filename=filename, bucket=bucket, dir_to_save=Path(dir_to_save))
+    _get_s3_manager().download_file(filename=filename, dir_to_save=Path(dir_to_save))
