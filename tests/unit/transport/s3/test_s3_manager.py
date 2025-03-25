@@ -74,7 +74,7 @@ class TestInitializedS3Manager:
         test_initialized_s3_manager: S3Manager,
         test_bucket_name: str,
     ) -> None:
-        test_initialized_s3_manager.create_bucket(test_bucket_name)
+        test_initialized_s3_manager.create_bucket()
         mocked_boto3_client.create_bucket.assert_called()
 
     def test_get_bucket_objects(
@@ -85,7 +85,7 @@ class TestInitializedS3Manager:
         test_initialized_s3_manager: S3Manager,
         test_bucket_name: str,
     ) -> None:
-        objects = test_initialized_s3_manager.get_bucket_objects(test_bucket_name)
+        objects = test_initialized_s3_manager.get_bucket_objects()
         mocked_boto3_client.list_objects.assert_called_once_with(Bucket=test_bucket_name)
         assert objects == [ObjectModel.model_validate(test_object_dict)]
 
@@ -122,7 +122,7 @@ class TestInitializedS3Manager:
         test_bucket_name: str,
     ) -> None:
         objects = [ObjectModel.model_validate(test_object_dict)]
-        test_initialized_s3_manager.delete_bucket_objects(bucket=test_bucket_name, objects=objects)
+        test_initialized_s3_manager.delete_bucket_objects(objects=objects)
         mocked_boto3_client.delete_objects.assert_called_once_with(
             Bucket=test_bucket_name, Delete={"Objects": [{"Key": obj.name} for obj in objects]}
         )
@@ -135,7 +135,7 @@ class TestInitializedS3Manager:
         test_bucket_name: str,
     ) -> None:
         with pytest.raises(EmptyObjectsListError):
-            test_initialized_s3_manager.delete_bucket_objects(bucket=test_bucket_name, objects=[])
+            test_initialized_s3_manager.delete_bucket_objects(objects=[])
         mocked_boto3_client.delete_objects.assert_not_called()
 
     @pytest.mark.parametrize("force", [False, True])
@@ -147,7 +147,7 @@ class TestInitializedS3Manager:
         test_bucket_name: str,
         force: bool,
     ) -> None:
-        test_initialized_s3_manager.delete_bucket(test_bucket_name, force=force)
+        test_initialized_s3_manager.delete_bucket(force=force)
         if force:
             mocked_boto3_client.list_objects.assert_called_once_with(Bucket=test_bucket_name)
             mocked_boto3_client.delete_objects.assert_called_once()
@@ -164,9 +164,7 @@ class TestInitializedS3Manager:
         tmp_path: Path,
         test_filename: str,
     ) -> None:
-        assert test_initialized_s3_manager.download_file(
-            filename=test_filename, dir_to_save=tmp_path, bucket=test_bucket_name
-        )
+        assert test_initialized_s3_manager.download_file(filename=test_filename, dir_to_save=tmp_path)
         mocked_boto3_client.download_file.assert_called_once_with(
             Bucket=test_bucket_name, Key=test_filename, Filename=(tmp_path / test_filename).as_posix()
         )
@@ -183,7 +181,5 @@ class TestInitializedS3Manager:
         mocked_boto3_client.download_file.side_effect = botocore.exceptions.ClientError(
             mock.MagicMock(), mock.MagicMock()
         )
-        assert not test_initialized_s3_manager.download_file(
-            filename=test_filename, dir_to_save=tmp_path, bucket=test_bucket_name
-        )
+        assert not test_initialized_s3_manager.download_file(filename=test_filename, dir_to_save=tmp_path)
         assert "Could not download file from s3 cloud!" in caplog.text
