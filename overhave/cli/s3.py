@@ -14,7 +14,7 @@ s3_app.add_typer(s3_bucket_app, name="bucket")
 
 
 def _check_bucket_registered(name: str) -> None:
-    if name == OverhaveS3ManagerSettings.bucket_name:
+    if name == OverhaveS3ManagerSettings.s3_bucket_name:
         return
     typer.secho(f"Note: specified s3 bucket name '{name}' is not correct!", fg="yellow")
 
