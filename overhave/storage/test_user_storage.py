@@ -68,7 +68,7 @@ class TestUserStorage(ITestUserStorage):
 
     @staticmethod
     def get_testuser_model_by_key(key: str) -> TestUserModel | None:
-        with db.create_session() as session:
+        with db.create_read_only_session() as session:
             user: db.TestUser | None = session.query(db.TestUser).filter(db.TestUser.key == key).one_or_none()
             if user is not None:
                 return TestUserModel.model_validate(user)

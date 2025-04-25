@@ -17,7 +17,7 @@ def login_for_access_token(
     auth_settings: OverhaveApiAuthSettings = fastapi.Depends(get_api_auth_settings),
     storage: ISystemUserStorage = fastapi.Depends(get_system_user_storage),
 ) -> AuthToken:
-    with db.create_session() as session:
+    with db.create_read_only_session() as session:
         if not storage.get_user_by_credits(
             session=session, login=form_data.username, password=SecretStr(form_data.password)
         ):
