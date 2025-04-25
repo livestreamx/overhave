@@ -28,7 +28,7 @@ def create_session(**kwargs: Any) -> Iterator[so.Session]:
 @contextmanager
 def create_read_only_session(**kwargs: Any) -> Iterator[so.Session]:
     """Provide a transactional scope around a series of operations. Default behaviour is rollback for Pool."""
-    new_session = Session(**kwargs)
+    new_session = Session(bind=metadata.engine, **kwargs)
     try:
         yield new_session
     finally:
