@@ -25,6 +25,16 @@ def create_session(**kwargs: Any) -> Iterator[so.Session]:
         new_session.close()
 
 
+@contextmanager
+def create_read_only_session(**kwargs: Any) -> Iterator[so.Session]:
+    """Provide a transactional scope around a series of operations. Default behaviour is rollback for Pool."""
+    new_session = Session(bind=metadata.engine, **kwargs)
+    try:
+        yield new_session
+    finally:
+        new_session.close()
+
+
 def ensure_feature_types_exist(feature_types: list[str]) -> None:
     with create_session() as session:
         try:

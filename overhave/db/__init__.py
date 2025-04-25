@@ -15,4 +15,4 @@ from .tables import (
     TestUser,
 )
 from .users import GroupRole, Role, UserRole
-from .utils import create_session, ensure_feature_types_exist
+from .utils import create_read_only_session, create_session, ensure_feature_types_exist
